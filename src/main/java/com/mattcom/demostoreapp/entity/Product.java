@@ -25,7 +25,7 @@ public class Product {
     private String productDescription;
 
     @Column(name = "price", nullable = false)
-    private float price;
+    private double price;
 
     @Column(name = "stock", nullable = false)
     private int stock;
@@ -34,10 +34,21 @@ public class Product {
     @JoinTable(name="product_image", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "image_id"))
     private List<Image> images;
 
+    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
+    private Inventory inventory;
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
     public Product() {
     }
 
-    public Product(ProductCategory productCategory, String productName, String productDescription, float price, int stock, List<Image> images) {
+    public Product(ProductCategory productCategory, String productName, String productDescription, double price, int stock, List<Image> images) {
         this.productCategory = productCategory;
         this.productName = productName;
         this.productDescription = productDescription;
@@ -101,11 +112,11 @@ public class Product {
         this.productDescription = productDescription;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

@@ -1,6 +1,7 @@
 package com.mattcom.demostoreapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,9 +24,9 @@ public class Address {
     @Column(name = "city", nullable = false)
     private String city;
 
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private StoreUser user;
 
     public StoreUser getUser() {

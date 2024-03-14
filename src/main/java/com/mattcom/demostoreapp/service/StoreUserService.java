@@ -1,36 +1,128 @@
 package com.mattcom.demostoreapp.service;
 
+import com.mattcom.demostoreapp.api.model.LoginInfo;
+import com.mattcom.demostoreapp.api.model.RegistrationInfo;
 import com.mattcom.demostoreapp.dao.StoreUserRepository;
+import com.mattcom.demostoreapp.dao.VerificationTokenRepository;
 import com.mattcom.demostoreapp.entity.Address;
 import com.mattcom.demostoreapp.entity.Product;
 import com.mattcom.demostoreapp.entity.StoreUser;
+import com.mattcom.demostoreapp.entity.VerificationToken;
+import com.mattcom.demostoreapp.exception.FailureToSendEmailException;
+import com.mattcom.demostoreapp.exception.StoreUserExistsException;
+import com.mattcom.demostoreapp.exception.UserNotVerifiedException;
 import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Email;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
 public class StoreUserService {
 
     private StoreUserRepository storeUserRepository;
+    private EncryptionService encryptionService;
+    private JWTService jwtService;
+    private EmailService emailService;
+    private VerificationTokenRepository verificationTokenRepository;
 
-    public StoreUserService(StoreUserRepository storeUserRepository) {
+    public StoreUserService(StoreUserRepository storeUserRepository, EncryptionService encryptionService, JWTService jwtService, EmailService emailService, VerificationTokenRepository verificationTokenRepository) {
         this.storeUserRepository = storeUserRepository;
+        this.encryptionService = encryptionService;
+        this.jwtService = jwtService;
+        this.emailService = emailService;
+        this.verificationTokenRepository = verificationTokenRepository;
     }
 
-    public List<StoreUser> getUsers(){
+    public StoreUser registerUser(RegistrationInfo registrationInfo) throws StoreUserExistsException, FailureToSendEmailException {
+        if (storeUserRepository.findByEmailIgnoreCase(registrationInfo.getEmail()).isPresent()) {
+            throw new StoreUserExistsException();
+        }
+        StoreUser user = new StoreUser();
+        user.setEmail(registrationInfo.getEmail());
+        user.setFirstName(registrationInfo.getFirstName());
+        user.setLastName(registrationInfo.getLastName());
+        user.setPassword(encryptionService.encryptPassword(registrationInfo.getPassword()));
+        user.setCreateTime(LocalDate.now());
+
+        VerificationToken token = createConfirmationToken(user);
+        emailService.sendVerificationToken(token);
+        // verificationTokenRepository.save(token);
+        return storeUserRepository.save(user);
+    }
+
+    private VerificationToken createConfirmationToken(StoreUser storeUser) {
+        VerificationToken token = new VerificationToken();
+        token.setToken(jwtService.generateVerificationJWT(storeUser));
+        token.setStoreUser(storeUser);
+        token.setCreated(new Timestamp(System.currentTimeMillis()));
+        storeUser.getVerificationTokens().add(token);
+        return token;
+    }
+
+    public String loginUser(LoginInfo loginInfo) throws FailureToSendEmailException, UserNotVerifiedException {
+        Optional<StoreUser> userOptional = storeUserRepository.findByEmailIgnoreCase(loginInfo.getEmail());
+        if (userOptional.isEmpty()) {
+            return null;
+        }
+
+        StoreUser storeUser = userOptional.get();
+        if (encryptionService.verifyPassword(loginInfo.getPassword(), storeUser.getPassword())) {
+            if (storeUser.isEmailVerified()) {
+                return jwtService.gererateJWT(storeUser);
+            } else {
+                Set<VerificationToken> tokens = storeUser.getVerificationTokens();
+                boolean resend = tokens.isEmpty() ||
+                        tokens.iterator().next().getCreated().before(new Timestamp(System.currentTimeMillis() - 1000 * 60 * 60));
+                if (resend) {
+                    VerificationToken token = createConfirmationToken(storeUser);
+                    verificationTokenRepository.save(token);
+                    emailService.sendVerificationToken(token);
+                }
+                throw new UserNotVerifiedException(resend);
+            }
+
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public boolean verifyUser(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        if (verificationToken.isEmpty()) {
+            return false;
+        }
+        StoreUser user = verificationToken.get().getStoreUser();
+        if(!user.isEmailVerified()){
+            user.setEmailVerified(true);
+            storeUserRepository.save(user);
+            verificationTokenRepository.deleteByStoreUser(user);
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    public List<StoreUser> getUsers() {
         return storeUserRepository.getUsersRolesAndAddresses();
     }
 
-    public StoreUser getUser(int id){
+    public StoreUser getUser(int id) {
         return storeUserRepository.getUsersRolesAndAddressesById(id);
     }
 
-    public StoreUser createUser(StoreUserRequest storeUserRequest){
+    public StoreUser createUser(StoreUserRequest storeUserRequest) {
         StoreUser user = new StoreUser();
         user.setCreateTime(LocalDate.now());
         user.setEmail(storeUserRequest.getEmail());
@@ -38,7 +130,7 @@ public class StoreUserService {
         user.setLastName(storeUserRequest.getLastName());
         user.setPhoneNumber(storeUserRequest.getPhoneNumber());
         user.setPassword(storeUserRequest.getPassword());
-        user.setRoles(storeUserRequest.getRoles());
+        // user.setRoles(storeUserRequest.getRoles());
         return storeUserRepository.save(user);
     }
 
@@ -54,7 +146,7 @@ public class StoreUserService {
         user.setLastName(userRequest.getLastName());
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setPassword(userRequest.getPassword());
-        user.setRoles(userRequest.getRoles());
+        //user.setRoles(userRequest.getRoles());
 
 
         return storeUserRepository.save(user);
@@ -66,7 +158,7 @@ public class StoreUserService {
             throw new Exception("User not found");
         }
         StoreUser userToDel = user.get();
-        userToDel.setRoles(new HashSet<>());
+        //userToDel.setRoles(new HashSet<>());
         storeUserRepository.delete(userToDel);
     }
 

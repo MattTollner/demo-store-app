@@ -29,17 +29,17 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public void createRole(@RequestBody ProductRequest productRequest) throws Exception {
+    public void createProduct(@RequestBody ProductRequest productRequest) throws Exception {
         productService.addProduct(productRequest);
     }
 
     @PutMapping("/update")
-    public void updateRole(@RequestBody ProductRequest productRequest) throws Exception {
+    public void updateProduct(@RequestBody ProductRequest productRequest) throws Exception {
         productService.updateProduct(productRequest);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteRole(@PathVariable("id") Integer id) throws Exception {
+    public void deleteProduct(@PathVariable("id") Integer id) throws Exception {
         productService.deleteProduct(id);
     }
 

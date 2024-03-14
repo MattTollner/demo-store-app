@@ -44,6 +44,11 @@ public class ProductService {
 
     }
 
+    public List<Product> getProducts() {
+        return productRepository.findAll();
+    }
+
+
     public void addProduct(ProductRequest productRequest) {
         Product product = new Product();
 
