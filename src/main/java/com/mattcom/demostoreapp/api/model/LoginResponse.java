@@ -5,13 +5,18 @@ package com.mattcom.demostoreapp.api.model;
 public class LoginResponse {
 
     private String jwt;
-
-
     private boolean success;
-
     private String failureMessage;
+    private String userId;
 
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public boolean isSuccess() {
         return success;
@@ -26,6 +31,7 @@ public class LoginResponse {
     public String getFailureMessage() {
         return failureMessage;
     }
+
     public void setFailureMessage(String failureMessage) {
         this.failureMessage = failureMessage;
     }

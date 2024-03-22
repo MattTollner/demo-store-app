@@ -3,7 +3,9 @@ package com.mattcom.demostoreapp.entity;
 import jakarta.persistence.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "role")
@@ -15,6 +17,17 @@ public class Role {
 
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<StoreUser> storeUsers = new LinkedHashSet<>();
+
+    public Set<StoreUser> getStoreUsers() {
+        return storeUsers;
+    }
+
+    public void setStoreUsers(Set<StoreUser> storeUsers) {
+        this.storeUsers = storeUsers;
+    }
 
     public String getRoleName() {
         return roleName;

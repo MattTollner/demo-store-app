@@ -6,6 +6,7 @@ import com.mattcom.demostoreapp.entity.StoreUser;
 import com.mattcom.demostoreapp.service.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,22 +34,34 @@ public class JWTRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String tokenHeader = request.getHeader("Authorization");
+        String jwtToken = null;
+        try {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("accessToken")) {
+                    jwtToken = cookie.getValue();
+                    break;
+                }
+            }
+        } catch (Exception e) {
+        }
 
         //If it starts with bearer then we know its valid
-        if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
-            String token = tokenHeader.substring(7);
+        if ((tokenHeader != null && tokenHeader.startsWith("Bearer ")) || jwtToken != null) {
+            String token = jwtToken != null ? jwtToken : tokenHeader.substring(7);
             try {
                 //Decode the token and get the email
                 String email = jwtService.getEmail(token);
                 Optional<StoreUser> userOptional = storeUserRepository.findByEmailIgnoreCase(email);
-                if(userOptional.isPresent()){
+                if (userOptional.isPresent()) {
                     StoreUser user = userOptional.get();
-                    //Build up auth object
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,null, new ArrayList());
-                    //Informs spring security about the user
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    //Stores the auth into the context
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    if (user.isEmailVerified()) {
+                        //Build up auth object
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList());
+                        //Informs spring security about the user
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        //Stores the auth into the context
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    }
                 }
             } catch (JWTDecodeException exception) {
 

@@ -86,7 +86,7 @@ public class StoreUserController {
     }
 
     @DeleteMapping("/{id}/address/{addressId}")
-    public void deleteAddress(@PathVariable Integer id, @PathVariable Integer addressId) throws Exception {
+    public ResponseEntity<Address> deleteAddress(@PathVariable Integer id, @PathVariable Integer addressId) throws Exception {
         Optional<Address> addressOpt = addressRepository.findById(addressId);
         if (!addressOpt.isPresent()) {
             throw new Exception("Could not find address");
@@ -94,6 +94,7 @@ public class StoreUserController {
         Address addressToDel = addressOpt.get();
         addressToDel.setUser(null);
         addressRepository.delete(addressToDel);
+        return ResponseEntity.ok(addressToDel);
     }
 
 

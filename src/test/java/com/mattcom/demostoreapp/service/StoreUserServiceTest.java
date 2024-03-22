@@ -4,23 +4,36 @@ import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import com.mattcom.demostoreapp.api.model.LoginInfo;
+import com.mattcom.demostoreapp.api.model.PasswordResetInfo;
 import com.mattcom.demostoreapp.api.model.RegistrationInfo;
+import com.mattcom.demostoreapp.dao.RoleRepository;
+import com.mattcom.demostoreapp.dao.StoreUserRepository;
+import com.mattcom.demostoreapp.dao.VerificationTokenRepository;
+import com.mattcom.demostoreapp.entity.Role;
+import com.mattcom.demostoreapp.entity.StoreUser;
+import com.mattcom.demostoreapp.entity.VerificationToken;
 import com.mattcom.demostoreapp.exception.FailureToSendEmailException;
 import com.mattcom.demostoreapp.exception.StoreUserExistsException;
 import com.mattcom.demostoreapp.exception.UserNotVerifiedException;
+import com.mattcom.demostoreapp.helper.StoreUserHelperMethodsTest;
+import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
+@AutoConfigureMockMvc
 public class StoreUserServiceTest {
 
     @RegisterExtension
@@ -31,10 +44,61 @@ public class StoreUserServiceTest {
     @Autowired
     private StoreUserService storeUserService;
 
+    @Autowired
+    private StoreUserRepository storeUserRepository;
+
+    @Autowired
+    private VerificationTokenRepository verificationTokenRepository;
+
+    @Autowired
+    private EncryptionService encryptionService;
+
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
+    JWTService jwtService;
+
+    @Autowired
+    MockMvc mockMvc;
+
+
+    @Test
+    @Transactional
+    public void testCreateUserWithRoles() {
+        StoreUserRequest storeUserRequest = new StoreUserRequest();
+        storeUserRequest.setEmail("testCreateUserWithRoles@live.co.uk");
+        storeUserRequest.setFirstName("testCreateUserWithRolesFirstName");
+        storeUserRequest.setLastName("testCreateUserWithRolesLastName");
+        storeUserRequest.setPassword("testCreateUserWithRolesPassword");
+        Role adminRole = roleRepository.findByRoleName("ADMIN").get();
+        storeUserRequest.setRoles(Set.of(adminRole));
+        Assertions.assertDoesNotThrow(() -> {
+            storeUserService.registerUser(storeUserRequest);
+        }, "User should register successfully");
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateUser() throws Exception {
+        //new StoreUserHelperMethodsTest().testUserValidation(mockMvc, "/api/users/update", false);
+        List<StoreUser> users = storeUserRepository.findAll();
+        StoreUserRequest user = new StoreUserRequest();
+        user.setId(1);
+        user.setFirstName("newName");
+        user.setLastName("newLastName");
+        user.setPhoneNumber("123456789");
+
+        Assertions.assertDoesNotThrow(() -> {
+            StoreUser saved = storeUserService.updateUser(user);
+            System.out.println("");
+        }, "User should update successfully");
+    }
+
     @Test
     @Transactional //Because its transactional the modifications to the database will be rolled back
     public void testRegisterUser() throws MessagingException {
-        RegistrationInfo registrationInfo = new RegistrationInfo();
+        StoreUserRequest registrationInfo = new StoreUserRequest();
         registrationInfo.setEmail("user1@example.com");
         registrationInfo.setFirstName("firstName");
         registrationInfo.setLastName("lastName");
@@ -43,12 +107,12 @@ public class StoreUserServiceTest {
             storeUserService.registerUser(registrationInfo);
         }, "User with email user1@example.com already exists");
 
-        registrationInfo.setEmail("testRegisterUser@example.com");
+        registrationInfo.setEmail("testRegisterUser1@example.com");
         Assertions.assertDoesNotThrow(() -> {
             storeUserService.registerUser(registrationInfo);
         }, "User should register successfully");
 
-        Assertions.assertEquals("testRegisterUser@example.com",
+        Assertions.assertEquals("testRegisterUser1@example.com",
                 greenMailConfig.getReceivedMessages()[0]
                         .getRecipients(Message.RecipientType.TO)[0].toString());
 
@@ -67,25 +131,63 @@ public class StoreUserServiceTest {
         Assertions.assertNull(storeUserService.loginUser(loginInfo), "password should be incorrect");
 
         loginInfo.setPassword("password");
+        List<StoreUser> users = storeUserService.getUsers();
         Assertions.assertNotNull(storeUserService.loginUser(loginInfo), "login should be successful");
 
         loginInfo.setEmail("user2@example.com");
 
-        try{
+        try {
             storeUserService.loginUser(loginInfo);
-            Assertions.assertTrue(false, "User should not have email  verified");
+            Assertions.fail("User should not have email verified");
         } catch (UserNotVerifiedException e) {
             Assertions.assertTrue(e.isNewEmailSent(), "Verification email should be sent");
             Assertions.assertEquals(1, greenMailConfig.getReceivedMessages().length);
         }
 
-        try{
+        try {
             storeUserService.loginUser(loginInfo);
-            Assertions.assertTrue(false, "User should not have email  verified");
+            Assertions.fail("User should not have email  verified");
         } catch (UserNotVerifiedException e) {
             Assertions.assertFalse(e.isNewEmailSent(), "Verification email should not be resent");
             Assertions.assertEquals(1, greenMailConfig.getReceivedMessages().length);
         }
     }
+
+    @Test
+    @Transactional
+    public void testVerifyUser() throws FailureToSendEmailException {
+        LoginInfo loginInfo = new LoginInfo();
+        loginInfo.setEmail("user2@example.com");
+        loginInfo.setPassword("password");
+        try {
+            storeUserService.loginUser(loginInfo);
+            Assertions.fail("User should not have email verified");
+        } catch (UserNotVerifiedException e) {
+            List<VerificationToken> verificationTokens = verificationTokenRepository.findByStoreUser_IdOrderByIdDesc(2);
+            VerificationToken token = verificationTokens.getFirst();
+            Assertions.assertTrue(storeUserService.verifyUser(token.getToken()), "User should be verified");
+        }
+        Assertions.assertFalse(storeUserService.verifyUser("token-incorrect"), "Token should not be valid");
+    }
+
+    @Test
+    @Transactional
+    public void testForgotPassword() throws FailureToSendEmailException, MessagingException {
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> storeUserService.forgotPassword("user3@example.com"));
+        Assertions.assertDoesNotThrow(() -> storeUserService.forgotPassword("user1@example.com"));
+        storeUserService.forgotPassword("user1@example.com");
+        Assertions.assertEquals("user1@example.com", greenMailConfig.getReceivedMessages()[0].getRecipients(Message.RecipientType.TO)[0].toString());
+    }
+
+    @Test
+    public void testResetPassword() throws Exception {
+        StoreUser user = storeUserRepository.findByEmailIgnoreCase("user1@example.com").get();
+        String token = jwtService.generateResetJWT(user);
+        storeUserService.resetPassword(new PasswordResetInfo(token, "password-new"));
+        String encryptedPassword = encryptionService.encryptPassword("password-new");
+        Assertions.assertEquals(encryptedPassword, storeUserRepository.findByEmailIgnoreCase("user1@example.com").get().getPassword(), "Password should be password-new");
+    }
+
+    //Todo test validation on the password field when resetting
 
 }

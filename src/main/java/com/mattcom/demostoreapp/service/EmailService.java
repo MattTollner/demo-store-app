@@ -1,5 +1,6 @@
 package com.mattcom.demostoreapp.service;
 
+import com.mattcom.demostoreapp.entity.StoreUser;
 import com.mattcom.demostoreapp.entity.VerificationToken;
 import com.mattcom.demostoreapp.exception.FailureToSendEmailException;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,19 @@ public class EmailService {
         String text = "To confirm your email, please click here: " + appFrontendUrl + "/auth/verify" + "?token=" + token.getToken();
         message.setSubject(subject);
         message.setText(text);
+        try {
+            javaMailSender.send(message);
+        } catch (MailException e) {
+            throw new FailureToSendEmailException();
+        }
+    }
+
+    public void sendPasswordResetEmail(StoreUser user, String token) throws FailureToSendEmailException{
+        SimpleMailMessage message = createMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Password reset link");
+        message.setText("Please click on the following linkn to reset password " + appFrontendUrl + "/auth/reset?=" + token);
+
         try {
             javaMailSender.send(message);
         } catch (MailException e) {

@@ -22,7 +22,6 @@ public class StoreUser {
     private String email;
 
 
-
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -41,12 +40,29 @@ public class StoreUser {
     @Column(name = "create_time")
     private LocalDate createTime;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "storeUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id DESC")
     private Set<VerificationToken> verificationTokens = new LinkedHashSet<>();
 
+
+
     @Column(name = "email_verified", nullable = false)
     private Boolean emailVerified = false;
+
+    @ManyToMany
+    @JoinTable(name = "store_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new LinkedHashSet<>();
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
     public Boolean isEmailVerified() {
         return emailVerified;

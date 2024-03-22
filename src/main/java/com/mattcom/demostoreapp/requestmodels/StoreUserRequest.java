@@ -3,6 +3,9 @@ package com.mattcom.demostoreapp.requestmodels;
 
 import com.mattcom.demostoreapp.entity.Address;
 import com.mattcom.demostoreapp.entity.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Set;
 
@@ -10,11 +13,25 @@ import java.util.Set;
 public class StoreUserRequest {
 
     private int id;
+
+    @NotNull
+    @NotBlank
     private String firstName;
+
+    @NotNull
+    @NotBlank
     private String lastName;
+
+    @NotNull
+    @NotBlank
+    @Email
     private String email;
-    private String phoneNumber;
+
+    @NotNull
+    @NotBlank
     private String password;
+
+    private String phoneNumber;
     private Set<Role> roles;
     private Set<Address> addresses;
 
@@ -27,6 +44,10 @@ public class StoreUserRequest {
         this.password = password;
         this.roles = roles;
         this.addresses = addresses;
+    }
+
+
+    public StoreUserRequest() {
     }
 
     public int getId() {

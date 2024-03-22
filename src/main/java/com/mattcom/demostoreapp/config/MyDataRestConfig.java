@@ -19,23 +19,23 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 
     private String theAllowedOrigins = "*";
 
-//    @Override
-//    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
+    @Override
+    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 //        HttpMethod[] theUnsupportedActions = {HttpMethod.POST, HttpMethod.PATCH, HttpMethod.DELETE, HttpMethod.PUT};
 //        String[] theSupportedActions = {"GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"};
-//        config.exposeIdsFor(StoreUser.class);
-//        config.exposeIdsFor(ProductCategory.class);
-//        config.exposeIdsFor(Product.class);
-//        config.exposeIdsFor(Role.class);
-//        config.exposeIdsFor(Image.class);
-//
-////        disableHttpMethods(User.class, config, theUnsupportedActions);
-////        //disableHttpMethods(ProductCategory.class, config, theUnsupportedActions);
-////        disableHttpMethods(Role.class, config, theUnsupportedActions);
-//
-//        System.out.println("LOGGGGG _+_+_+__+_+_+_+ " + config.getBasePath());
-//       // cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins).allowedMethods("*").allowedHeaders("*");
-//    }
+        config.exposeIdsFor(StoreUser.class);
+        config.exposeIdsFor(ProductCategory.class);
+        config.exposeIdsFor(Product.class);
+        config.exposeIdsFor(Role.class);
+        config.exposeIdsFor(Image.class);
+
+//        disableHttpMethods(User.class, config, theUnsupportedActions);
+//        //disableHttpMethods(ProductCategory.class, config, theUnsupportedActions);
+//        disableHttpMethods(Role.class, config, theUnsupportedActions);
+
+        System.out.println("LOGGGGG _+_+_+__+_+_+_+ " + config.getBasePath());
+       // cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins).allowedMethods("*").allowedHeaders("*");
+    }
 
 //    @Bean
 //    public FilterRegistrationBean corsFilter() {
