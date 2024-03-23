@@ -46,6 +46,10 @@ public class ShoppingCart {
         this.shoppingCartQuantities.add(shoppingCartQuantities);
     }
 
+    public void removeShoppingCartQuantity(ShoppingCartQuantities shoppingCartQuantities){
+        this.shoppingCartQuantities.removeIf(cartQuantity -> cartQuantity.getId().equals(shoppingCartQuantities.getId()));
+    }
+
     public void removeShoppingCartProduct(Product product, Integer quantity){
         ShoppingCartQuantities existingProduct = getProductFromId(product.getId());
         if(existingProduct == null){
@@ -83,4 +87,7 @@ public class ShoppingCart {
         this.id = id;
     }
 
+    public void addShoppingCartQuantity(ShoppingCartQuantities shoppingCartQuantities) {
+        this.shoppingCartQuantities.add(shoppingCartQuantities);
+    }
 }

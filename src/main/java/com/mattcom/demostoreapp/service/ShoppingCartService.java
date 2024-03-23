@@ -30,7 +30,7 @@ public class ShoppingCartService {
 
     public ShoppingCart getCart(StoreUser user) throws UserNotFoundException {
         Optional<ShoppingCart> cart = shoppingCartRepository.findByUser_Id(user.getId());
-        if(cart.isEmpty()){
+        if (cart.isEmpty()) {
             return createCartForUser(user.getId());
         }
         return cart.get();
@@ -39,51 +39,63 @@ public class ShoppingCartService {
 
     //Todo should get the user from the context not the id
     public void updateProductInCart(ShoppingCartQuantityRequest cartQuantityRequest, StoreUser user) throws ProductNotFoundException, UserNotFoundException {
-        Optional<ShoppingCartQuantities> cartQuantity = shoppingCartQuantitiesRepository.findById(cartQuantityRequest.getId());
-        if(cartQuantity.isPresent() && cartQuantityRequest.getQuantity() == 0){
-            shoppingCartQuantitiesRepository.delete(cartQuantity.get());
-            return;
-        }
+        Optional<ShoppingCartQuantities> cartQuantityOpt = getShoppingCartQuantity(cartQuantityRequest, user);
         Optional<Product> product = productRepository.findById(cartQuantityRequest.getProductId());
-        if(product.isEmpty()){
+        if (product.isEmpty()) {
             throw new ProductNotFoundException();
         }
+        ShoppingCart cart = getShoppingCart(user);
+        shoppingCartRepository.save(updateCartQuantity(cartQuantityOpt, cartQuantityRequest, cart, product.get()));
+    }
 
+    private ShoppingCart updateCartQuantity(Optional<ShoppingCartQuantities> cartQuantityOpt, ShoppingCartQuantityRequest cartQuantityRequest, ShoppingCart cart, Product product) {
+        ShoppingCartQuantities updatedCartQuantity = createUpdatedCartQuantity(cartQuantityOpt, cartQuantityRequest, cart, product);
+        if (updatedCartQuantity.getQuantity() <= 0) {
+            if (cartQuantityOpt.isPresent()) {
+                shoppingCartQuantitiesRepository.delete(updatedCartQuantity);
+                cart.removeShoppingCartQuantity(updatedCartQuantity);
+            }
+            return cart;
+        }
+        updatedCartQuantity = shoppingCartQuantitiesRepository.save(updatedCartQuantity);
+        if (cartQuantityOpt.isEmpty()) {
+            cart.addShoppingCartQuantity(updatedCartQuantity);
+        }
+        return cart;
+    }
+
+    private ShoppingCartQuantities createUpdatedCartQuantity(Optional<ShoppingCartQuantities> cartQuantityOpt, ShoppingCartQuantityRequest cartQuantityRequest, ShoppingCart cart, Product product) {
+        ShoppingCartQuantities shoppingCartQuantity = cartQuantityOpt.orElseGet(() -> new ShoppingCartQuantities(product, cartQuantityRequest.getQuantity(), cart));
+        cartQuantityOpt.ifPresent(cartQuantities -> shoppingCartQuantity.setQuantity(cartQuantities.getQuantity() + cartQuantityRequest.getQuantity()));
+        return shoppingCartQuantity;
+    }
+
+
+    private ShoppingCart getShoppingCart(StoreUser user) throws UserNotFoundException {
         Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByUser_Id(user.getId());
 
         ShoppingCart cart;
-        if(cartOpt.isEmpty()){
+        if (cartOpt.isEmpty()) {
             cart = createCartForUser(user.getId());
         } else {
             cart = cartOpt.get();
         }
-        cart.updateShoppingCartProduct(product.get(), cartQuantityRequest.getQuantity());
-        shoppingCartRepository.save(cart);
+        return cart;
     }
 
-    public void decrementProductInCart(Integer productId, StoreUser user, Integer quantity) throws ProductNotFoundException, UserNotFoundException {
-        Optional<Product> product = productRepository.findById(productId);
-        if(product.isEmpty()){
-            throw new ProductNotFoundException();
+    private Optional<ShoppingCartQuantities> getShoppingCartQuantity(ShoppingCartQuantityRequest cartQuantityRequest, StoreUser user) {
+        Optional<ShoppingCartQuantities> cartQuantity = shoppingCartQuantitiesRepository.findById(cartQuantityRequest.getId());
+        if (cartQuantity.isEmpty()) {
+            cartQuantity = shoppingCartQuantitiesRepository.findByProduct_IdAndShoppingCart_User_Id(cartQuantityRequest.getProductId(), user.getId());
         }
 
-        Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByUser_Id(user.getId());
-
-        ShoppingCart cart;
-        if(cartOpt.isEmpty()){
-            cart = createCartForUser(user.getId());
-        } else {
-            cart = cartOpt.get();
-        }
-        cart.removeShoppingCartProduct(product.get(), quantity);
-        shoppingCartRepository.save(cart);
+        return cartQuantity;
     }
 
 
-
-    public ShoppingCart createCartForUser(Integer userId) throws UserNotFoundException {
+    private ShoppingCart createCartForUser(Integer userId) throws UserNotFoundException {
         Optional<StoreUser> user = storeUserRepository.findById(userId);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new UserNotFoundException();
         }
 

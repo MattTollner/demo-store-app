@@ -30,10 +30,10 @@ public class ShoppingCartController {
         return cart.getShoppingCartQuantities();
     }
 
-    @DeleteMapping()
-    public void decrementProductInCart(@AuthenticationPrincipal StoreUser user, @RequestBody ShoppingCartQuantityRequest request) throws Exception {
-        cartService.decrementProductInCart(request.getProductId(), user, request.getQuantity());
-    }
+//    @DeleteMapping()
+//    public void decrementProductInCart(@AuthenticationPrincipal StoreUser user, @RequestBody ShoppingCartQuantityRequest request) throws Exception {
+//        cartService.decrementProductInCart(request.getProductId(), user, request.getQuantity());
+//    }
 
     @PutMapping
     public void updateProductInCart(@AuthenticationPrincipal StoreUser user, @RequestBody ShoppingCartQuantityRequest request) throws Exception {

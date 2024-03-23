@@ -26,17 +26,17 @@ public class ProductService {
         this.productCategoryRepository = productCategoryRepository;
     }
 
-    public List<Product>getAllProductsWithCategory(Integer categoryId){
-        if(categoryId == null){
+    public List<Product> getAllProductsWithCategory(Integer categoryId) {
+        if (categoryId == null) {
             return productRepository.findAll();
         }
 
         Optional<ProductCategory> productCategoryOpt = productCategoryRepository.findById(categoryId);
-        if(!productCategoryOpt.isPresent()){
+        if (!productCategoryOpt.isPresent()) {
             throw new Error("Category not found" + categoryId);
         }
         ProductCategory productCategory = productCategoryOpt.get();
-        if(productCategory.getParentCategoryId() > 0){
+        if (productCategory.getParentCategoryId() > 0) {
             return productRepository.findByProductCategory_Id(categoryId);
         }
 
@@ -48,12 +48,20 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public Product getProduct(Integer id) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isEmpty()) {
+            throw new Error("Product not found");
+        }
+        return product.get();
+    }
+
 
     public void addProduct(ProductRequest productRequest) {
         Product product = new Product();
 
         Optional<ProductCategory> parent = productCategoryRepository.findById(productRequest.getProductCategoryId());
-        if(!parent.isPresent()){
+        if (!parent.isPresent()) {
             throw new Error("Category not found");
         }
 
@@ -67,38 +75,38 @@ public class ProductService {
         productRepository.save(product);
     }
 
-        public void deleteProduct(Integer productId) throws Exception {
-       Optional<Product> product = productRepository.findById(productId);
-       if (!product.isPresent()) {
-           throw new Exception("Product not found");
-       }
-       productRepository.delete(product.get());
-   }
+    public void deleteProduct(Integer productId) throws Exception {
+        Optional<Product> product = productRepository.findById(productId);
+        if (!product.isPresent()) {
+            throw new Exception("Product not found");
+        }
+        productRepository.delete(product.get());
+    }
 
-   public void updateProduct(ProductRequest productRequest) throws Exception {
-       Optional<Product> productOpt = productRepository.findById(productRequest.getId());
-       if (!productOpt.isPresent()) {
-           throw new Exception("Product not found");
-       }
+    public void updateProduct(ProductRequest productRequest) throws Exception {
+        Optional<Product> productOpt = productRepository.findById(productRequest.getId());
+        if (!productOpt.isPresent()) {
+            throw new Exception("Product not found");
+        }
 
-       ProductCategory category = null;
-       if(productRequest.getProductCategoryId() != -1){
-           Optional<ProductCategory> categoryOpt = productCategoryRepository.findById(productRequest.getProductCategoryId());
-           if(!categoryOpt.isPresent()){
-               throw new Exception("Parent Category Not Found");
-           }
-           category = categoryOpt.get();
-       }
+        ProductCategory category = null;
+        if (productRequest.getProductCategoryId() != -1) {
+            Optional<ProductCategory> categoryOpt = productCategoryRepository.findById(productRequest.getProductCategoryId());
+            if (!categoryOpt.isPresent()) {
+                throw new Exception("Parent Category Not Found");
+            }
+            category = categoryOpt.get();
+        }
 
-       Product product = productOpt.get();
-       product.setProductCategory(category);
-       product.setPrice(productRequest.getPrice());
-       product.setProductName(productRequest.getProductName());
-       product.setStock(productRequest.getStock());
-       product.setProductDescription(productRequest.getProductDescription());
-       product.setImages(productRequest.getImages());
-       productRepository.save(product);
-   }
+        Product product = productOpt.get();
+        product.setProductCategory(category);
+        product.setPrice(productRequest.getPrice());
+        product.setProductName(productRequest.getProductName());
+        product.setStock(productRequest.getStock());
+        product.setProductDescription(productRequest.getProductDescription());
+        product.setImages(productRequest.getImages());
+        productRepository.save(product);
+    }
 
 
 }

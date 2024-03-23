@@ -23,6 +23,15 @@ public class ShoppingCartQuantities {
     @JoinColumn(name = "shopping_cart_id", nullable = false)
     private ShoppingCart shoppingCart;
 
+    public ShoppingCartQuantities() {
+    }
+
+    public ShoppingCartQuantities(Product product, Integer quantity, ShoppingCart shoppingCart) {
+        this.product = product;
+        this.quantity = quantity;
+        this.shoppingCart = shoppingCart;
+    }
+
     public ShoppingCart getShoppingCart() {
         return shoppingCart;
     }

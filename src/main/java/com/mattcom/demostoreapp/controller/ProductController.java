@@ -3,6 +3,7 @@ package com.mattcom.demostoreapp.controller;
 
 import com.mattcom.demostoreapp.dao.ProductRepository;
 import com.mattcom.demostoreapp.entity.Product;
+import com.mattcom.demostoreapp.entity.StoreUser;
 import com.mattcom.demostoreapp.requestmodels.ProductRequest;
 import com.mattcom.demostoreapp.service.ProductCategoryService;
 import com.mattcom.demostoreapp.service.ProductService;
@@ -36,6 +37,11 @@ public class ProductController {
     @PutMapping("/update")
     public void updateProduct(@RequestBody ProductRequest productRequest) throws Exception {
         productService.updateProduct(productRequest);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProduct(@PathVariable Integer id){
+        return ResponseEntity.ok(productService.getProduct(id));
     }
 
     @DeleteMapping("/delete/{id}")
