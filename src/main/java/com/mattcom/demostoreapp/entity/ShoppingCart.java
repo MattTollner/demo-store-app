@@ -1,19 +1,25 @@
 package com.mattcom.demostoreapp.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "shopping_cart")
-public class ShoppingCart {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+public class ShoppingCart extends DefaultEntity{
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -21,14 +27,6 @@ public class ShoppingCart {
 
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ShoppingCartQuantities> shoppingCartQuantities = new ArrayList<>();
-
-    public List<ShoppingCartQuantities> getShoppingCartQuantities() {
-        return shoppingCartQuantities;
-    }
-
-    public void setShoppingCartQuantities(List<ShoppingCartQuantities> shoppingCartQuantities) {
-        this.shoppingCartQuantities = shoppingCartQuantities;
-    }
 
     public void updateShoppingCartProduct(Product product, Integer quantity){
         ShoppingCartQuantities existingProduct = getProductFromId(product.getId());
@@ -70,22 +68,6 @@ public class ShoppingCart {
         return null;
     }
 
-
-    public StoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(StoreUser user) {
-        this.user = user;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public void addShoppingCartQuantity(ShoppingCartQuantities shoppingCartQuantities) {
         this.shoppingCartQuantities.add(shoppingCartQuantities);

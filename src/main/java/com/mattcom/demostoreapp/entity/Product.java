@@ -1,21 +1,29 @@
 package com.mattcom.demostoreapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
-@Table(name="product")
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+@Table(name = "product")
+public class Product extends DefaultEntity {
 
     @ManyToOne()
-    @JoinColumn(name="product_category")
+    @JoinColumn(name = "product_category")
     private ProductCategory productCategory;
 
     @Column(name = "product_name", nullable = false)
@@ -27,104 +35,56 @@ public class Product {
     @Column(name = "price", nullable = false)
     private double price;
 
-    @Column(name = "stock", nullable = false)
-    private int stock;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name="product_image", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "image_id"))
-    private List<Image> images;
-
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, optional = false, orphanRemoval = true)
     private Inventory inventory;
 
-    public Inventory getInventory() {
-        return inventory;
+    @Size(message = "Must be between 1 and 10 images", min = 1, max = 10)
+    @NotNull
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<Image> productImages = new ArrayList<>();
+
+
+    public void setProductImages(List<Image> productImages) {
+        productImages.forEach(image -> image.setProduct(this));
+        this.productImages = productImages;
     }
 
+    public void updateProductImages(List<Image> newProductImages) {
+        List<Image> imagesToRemove = this.productImages.stream()
+                .filter(image -> newProductImages.stream().noneMatch(newImage -> newImage.getId().equals(image.getId())))
+                .toList();
+        List<Image> imagesToAdd = newProductImages.stream()
+                .filter(newImage -> this.productImages.stream().noneMatch(image -> image.getId().equals(newImage.getId())))
+                .toList();
+        imagesToAdd.forEach(image -> image.setProduct(this));
+
+        this.productImages.removeAll(imagesToRemove);
+        this.productImages.addAll(imagesToAdd);
+    }
+
+
     public void setInventory(Inventory inventory) {
+        inventory.setProduct(this);
         this.inventory = inventory;
     }
 
-    public Product() {
+    public void updateInventory(Inventory inventory){
+        this.inventory.setStock(inventory.getStock());
     }
 
-    public Product(ProductCategory productCategory, String productName, String productDescription, double price, int stock, List<Image> images) {
-        this.productCategory = productCategory;
-        this.productName = productName;
-        this.productDescription = productDescription;
-        this.price = price;
-        this.stock = stock;
-        this.images = images;
-    }
 
     public int getProductCategoryId() {
-        if(productCategory == null){
+        if (productCategory == null) {
             return -1;
         }
         return productCategory.getId();
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(List<Image> images) {
-
-        this.images = images;
-    }
-
-    public void addImage(Image image){
-        if(this.images == null) {
-            this.images = new ArrayList<>();
+    public void addImage(Image image) {
+        if (this.productImages == null) {
+            this.productImages = new ArrayList<>();
         }
-        this.images.add(image);
+        this.productImages.add(image);
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public ProductCategory getProductCategory() {
-        return productCategory;
-    }
-
-    public void setProductCategory(ProductCategory productCategory) {
-        this.productCategory = productCategory;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductDescription() {
-        return productDescription;
-    }
-
-    public void setProductDescription(String productDescription) {
-        this.productDescription = productDescription;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
 }

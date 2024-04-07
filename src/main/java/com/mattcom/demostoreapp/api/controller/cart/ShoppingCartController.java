@@ -11,6 +11,7 @@ import com.mattcom.demostoreapp.service.ShoppingCartService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,11 @@ public class ShoppingCartController {
 
     @GetMapping
     public List<ShoppingCartQuantities> getCart(@AuthenticationPrincipal StoreUser user) throws UserNotFoundException {
+        if(user == null) {
+
+            //TOdo handle better
+            return new ArrayList<>();
+        }
         ShoppingCart cart = cartService.getCart(user);
         return cart.getShoppingCartQuantities();
     }

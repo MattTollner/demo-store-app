@@ -1,6 +1,7 @@
 package com.mattcom.demostoreapp.dao;
 
 import com.mattcom.demostoreapp.entity.StoreUser;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -20,5 +21,10 @@ public interface StoreUserRepository extends JpaRepository<StoreUser,Integer> {
      StoreUser getUsersRolesAndAddressesById(int id);
 
      Optional<StoreUser> findByEmailIgnoreCase(String email);
+
+     @Query("select a from StoreUser a join fetch a.roles where upper(a.email) =  upper(?1)")
+     Optional<StoreUser> getUserAndRolesByEmail(String email);
+
+
 
 }

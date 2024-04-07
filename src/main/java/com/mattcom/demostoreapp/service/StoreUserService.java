@@ -2,11 +2,8 @@ package com.mattcom.demostoreapp.service;
 
 import com.mattcom.demostoreapp.api.model.LoginInfo;
 import com.mattcom.demostoreapp.api.model.PasswordResetInfo;
-import com.mattcom.demostoreapp.api.model.RegistrationInfo;
 import com.mattcom.demostoreapp.dao.StoreUserRepository;
 import com.mattcom.demostoreapp.dao.VerificationTokenRepository;
-import com.mattcom.demostoreapp.entity.Address;
-import com.mattcom.demostoreapp.entity.Product;
 import com.mattcom.demostoreapp.entity.StoreUser;
 import com.mattcom.demostoreapp.entity.VerificationToken;
 import com.mattcom.demostoreapp.exception.FailureToSendEmailException;
@@ -15,14 +12,11 @@ import com.mattcom.demostoreapp.exception.UserNotVerifiedException;
 import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +48,7 @@ public class StoreUserService {
         user.setFirstName(registrationInfo.getFirstName());
         user.setLastName(registrationInfo.getLastName());
         user.setPassword(encryptionService.encryptPassword(registrationInfo.getPassword()));
-        user.setCreateTime(LocalDate.now());
-        user.setRoles(registrationInfo.getRoles());
+        //user.setRoles(registrationInfo.getRoles());
         VerificationToken token = createConfirmationToken(user);
         emailService.sendVerificationToken(token);
         // verificationTokenRepository.save(token);
@@ -128,7 +121,6 @@ public class StoreUserService {
 
     public StoreUser createUser(StoreUserRequest storeUserRequest) {
         StoreUser user = new StoreUser();
-        user.setCreateTime(LocalDate.now());
         user.setEmail(storeUserRequest.getEmail());
         user.setFirstName(storeUserRequest.getFirstName());
         user.setLastName(storeUserRequest.getLastName());

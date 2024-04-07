@@ -27,6 +27,7 @@ public class JWTService {
 
     private static final String EMAIL_KEY = "EMAIL";
     private static final String ID_KEY = "USER_ID";
+    private static final String ROLE_KEY = "USER_ROLES";
     private static final String EMAIL_AUTH_KEY = "EMAIL_AUTH";
     private static final String EMAIL_RESET_KEY = "EMAIL_RESET";
 
@@ -40,6 +41,7 @@ public class JWTService {
         return JWT.create()
                 .withClaim(EMAIL_KEY, user.getEmail())
                 .withClaim(ID_KEY, String.valueOf(user.getId()))
+                .withArrayClaim(ROLE_KEY, user.getRolesAsStringArray())
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000L * expireInSeconds)))
                 .withIssuer(issuer)
                 .sign(algorithm);
@@ -56,7 +58,7 @@ public class JWTService {
     }
 
     //Token used to reset password, only sent in conformation email
-    //Security issue todo, we do not store this token in the database which means it could be used again after inital use.
+    //Security issue todo, we do not store this token in the database which means it could be used again after initial use.
     public String generateResetJWT(StoreUser user) {
         return JWT.create()
                 .withClaim(EMAIL_RESET_KEY, user.getEmail())

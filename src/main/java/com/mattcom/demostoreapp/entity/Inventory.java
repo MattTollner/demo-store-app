@@ -2,16 +2,22 @@ package com.mattcom.demostoreapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
 //Improves performance as inventory is not always needed
+@Setter
+@Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Table(name = "inventory")
-public class Inventory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+public class Inventory extends DefaultEntity{
 
     @JsonIgnore
     @OneToOne(optional = false, orphanRemoval = true)
@@ -21,28 +27,9 @@ public class Inventory {
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
+    public Inventory(int stock) {
         this.stock = stock;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
 }

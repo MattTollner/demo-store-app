@@ -1,12 +1,20 @@
 package com.mattcom.demostoreapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "role")
 public class Role {
@@ -19,31 +27,9 @@ public class Role {
     private String roleName;
 
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     private Set<StoreUser> storeUsers = new LinkedHashSet<>();
 
-    public Set<StoreUser> getStoreUsers() {
-        return storeUsers;
-    }
-
-    public void setStoreUsers(Set<StoreUser> storeUsers) {
-        this.storeUsers = storeUsers;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     @Override
     public final boolean equals(Object o) {

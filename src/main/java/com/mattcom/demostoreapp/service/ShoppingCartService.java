@@ -10,6 +10,8 @@ import com.mattcom.demostoreapp.exception.ProductNotFoundException;
 import com.mattcom.demostoreapp.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -34,6 +36,18 @@ public class ShoppingCartService {
             return createCartForUser(user.getId());
         }
         return cart.get();
+    }
+
+    public void clearCart(Integer id) {
+        Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUser_Id(id);
+        if (cartOptional.isEmpty()) {
+            //Todo handle exception
+            return;
+        }
+
+        ShoppingCart cart = cartOptional.get();
+        cart.setShoppingCartQuantities(new ArrayList<>());
+        shoppingCartRepository.save(cart);
     }
 
 
@@ -66,7 +80,11 @@ public class ShoppingCartService {
 
     private ShoppingCartQuantities createUpdatedCartQuantity(Optional<ShoppingCartQuantities> cartQuantityOpt, ShoppingCartQuantityRequest cartQuantityRequest, ShoppingCart cart, Product product) {
         ShoppingCartQuantities shoppingCartQuantity = cartQuantityOpt.orElseGet(() -> new ShoppingCartQuantities(product, cartQuantityRequest.getQuantity(), cart));
-        cartQuantityOpt.ifPresent(cartQuantities -> shoppingCartQuantity.setQuantity(cartQuantities.getQuantity() + cartQuantityRequest.getQuantity()));
+        if (cartQuantityOpt.isPresent() && cartQuantityRequest.getQuantity() == 0) {
+            shoppingCartQuantity.setQuantity(0);
+        } else {
+            cartQuantityOpt.ifPresent(cartQuantities -> shoppingCartQuantity.setQuantity(cartQuantities.getQuantity() + cartQuantityRequest.getQuantity()));
+        }
         return shoppingCartQuantity;
     }
 

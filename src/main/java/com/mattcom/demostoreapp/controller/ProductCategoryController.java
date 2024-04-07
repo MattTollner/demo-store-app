@@ -5,6 +5,7 @@ import com.mattcom.demostoreapp.requestmodels.ProductCategoryRequest;
 import com.mattcom.demostoreapp.requestmodels.RoleRequest;
 import com.mattcom.demostoreapp.service.ProductCategoryService;
 import com.mattcom.demostoreapp.service.RoleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void createRole(@RequestBody ProductCategoryRequest productCategoryRequest) throws Exception {
         productCategoryService.addProductCategory(productCategoryRequest);
     }

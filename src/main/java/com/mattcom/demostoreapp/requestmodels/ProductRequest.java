@@ -1,8 +1,9 @@
 package com.mattcom.demostoreapp.requestmodels;
 
 import com.mattcom.demostoreapp.entity.Image;
+import com.mattcom.demostoreapp.entity.Inventory;
+import com.mattcom.demostoreapp.entity.ProductCategory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProductRequest {
@@ -13,22 +14,25 @@ public class ProductRequest {
 
     private String productDescription;
 
+    private ProductCategory productCategory;
+
     private int productCategoryId;
 
     private float price;
 
-    private int stock;
+    private Inventory inventory;
 
-    private List<Image> images;
+    private List<Image> productImages;
 
-    public ProductRequest(int id, String productName, String productDescription, int productCategoryId, float price, int stock, List<Image> images) {
+    public ProductRequest(int id, String productName, String productDescription, ProductCategory productCategory, int productCategoryId, float price, Inventory inventory, List<Image> productImages) {
         this.id = id;
         this.productName = productName;
         this.productDescription = productDescription;
+        this.productCategory = productCategory;
         this.productCategoryId = productCategoryId;
         this.price = price;
-        this.stock = stock;
-        this.images = images;
+        this.inventory = inventory;
+        this.productImages = productImages;
     }
 
     public int getId() {
@@ -45,6 +49,15 @@ public class ProductRequest {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+
+    public ProductCategory getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(ProductCategory productCategory) {
+        this.productCategory = productCategory;
     }
 
     public String getProductDescription() {
@@ -71,20 +84,22 @@ public class ProductRequest {
         this.price = price;
     }
 
-    public int getStock() {
-        return stock;
+
+
+    public List<Image> getProductImages() {
+        return productImages;
     }
 
-    public List<Image> getImages() {
-        return images;
+    public void setProductImages(List<Image> productImages) {
+        this.productImages = productImages;
     }
 
-    public void setImages(List<Image> images) {
-        this.images = images;
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    public void setStock(int stock) {
-        this.stock = stock;
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 }
 

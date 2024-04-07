@@ -2,18 +2,28 @@ package com.mattcom.demostoreapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "store_user")
-public class StoreUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+public class StoreUser extends DefaultEntity implements UserDetails  {
 
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
@@ -37,8 +47,6 @@ public class StoreUser {
     @Column(name = "phone_number", length = 50)
     private String phoneNumber;
 
-    @Column(name = "create_time")
-    private LocalDate createTime;
 
     @JsonIgnore
     @OneToMany(mappedBy = "storeUser", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -56,93 +64,51 @@ public class StoreUser {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new LinkedHashSet<>();
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+
 
     public Boolean isEmailVerified() {
         return emailVerified;
     }
 
-    public void setEmailVerified(Boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
 
-    public Set<VerificationToken> getVerificationTokens() {
-        return verificationTokens;
-    }
 
-    public void setVerificationTokens(Set<VerificationToken> verificationTokens) {
-        this.verificationTokens = verificationTokens;
-    }
-
-    public LocalDate getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDate createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Set<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(Set<Address> addresses) {
-        this.addresses = addresses;
+    public String[] getRolesAsStringArray(){
+        return roles.stream().map(Role::getRoleName).toArray(String[]::new);
     }
 
 
-    public String getLastName() {
-        return lastName;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        roles.size();
+        Collection<SimpleGrantedAuthority> result = roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).toList();
+        return result;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 
-    public String getFirstName() {
-        return firstName;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public String getEmail() {
-        return email;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }

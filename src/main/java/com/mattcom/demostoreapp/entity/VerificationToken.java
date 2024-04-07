@@ -1,16 +1,22 @@
 package com.mattcom.demostoreapp.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "verification_token")
-public class VerificationToken {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+public class VerificationToken extends DefaultEntity {
 
     @Lob
     @Column(name = "token", nullable = false, unique = true)
@@ -23,36 +29,5 @@ public class VerificationToken {
     @JoinColumn(name = "store_user_id", nullable = false)
     private StoreUser storeUser;
 
-    public StoreUser getStoreUser() {
-        return storeUser;
-    }
-
-    public void setStoreUser(StoreUser storeUser) {
-        this.storeUser = storeUser;
-    }
-
-    public Timestamp getCreated() {
-        return created;
-    }
-
-    public void setCreated(Timestamp created) {
-        this.created = created;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
 }

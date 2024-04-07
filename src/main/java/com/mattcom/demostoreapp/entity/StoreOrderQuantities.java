@@ -2,14 +2,21 @@ package com.mattcom.demostoreapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "store_order_quantities")
-public class StoreOrderQuantities {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+public class StoreOrderQuantities extends DefaultEntity {
+
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id", nullable = false)
@@ -20,42 +27,21 @@ public class StoreOrderQuantities {
 
 
 
+
+
     //Were never going to need the json of the order from the quantity so we can ignore it, this will prevent a cyclical fetch
     @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_order_id", nullable = false)
     private StoreOrder storeOrder;
 
-    public StoreOrder getStoreOrder() {
-        return storeOrder;
-    }
+    @Column(name = "price", nullable = false)
+    private Double price;
 
-    public void setStoreOrder(StoreOrder storeOrder) {
-        this.storeOrder = storeOrder;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
+    public StoreOrderQuantities(Product product, Integer quantity) {
+        this.product = product;
         this.quantity = quantity;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
 }

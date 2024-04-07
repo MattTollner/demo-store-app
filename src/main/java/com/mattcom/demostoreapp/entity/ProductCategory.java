@@ -1,17 +1,20 @@
 package com.mattcom.demostoreapp.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name="product_category")
-public class ProductCategory {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+public class ProductCategory extends DefaultEntity{
 
     @ManyToOne()
     @JoinColumn(name="parent_category_id")
@@ -20,20 +23,6 @@ public class ProductCategory {
     @Column(name = "category_name")
     private String categoryName;
 
-    public ProductCategory() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public ProductCategory getParentCategory() {
-        return parentCategory;
-    }
 
     public int getParentCategoryId() {
         if(parentCategory == null){
@@ -42,20 +31,4 @@ public class ProductCategory {
         return parentCategory.getId();
     }
 
-    public void setParentCategory(ProductCategory parentCategory) {
-        this.parentCategory = parentCategory;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public ProductCategory(ProductCategory parentCategory, String categoryName) {
-        this.parentCategory = parentCategory;
-        this.categoryName = categoryName;
-    }
 }

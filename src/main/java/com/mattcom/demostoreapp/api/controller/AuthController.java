@@ -1,6 +1,8 @@
 package com.mattcom.demostoreapp.api.controller;
 
 import com.mattcom.demostoreapp.api.model.*;
+import com.mattcom.demostoreapp.dao.RoleRepository;
+import com.mattcom.demostoreapp.entity.Role;
 import com.mattcom.demostoreapp.entity.StoreUser;
 import com.mattcom.demostoreapp.exception.FailureToSendEmailException;
 import com.mattcom.demostoreapp.exception.StoreUserExistsException;
@@ -18,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,30 +28,42 @@ public class AuthController {
 
     private StoreUserService storeUserSerivice;
     private JWTService jwtService;
+    private RoleRepository roleRepository;
 
-    public AuthController(StoreUserService storeUserSerivice, JWTService jwtService) {
+    public AuthController(StoreUserService storeUserSerivice, JWTService jwtService, RoleRepository roleRepository) {
         this.storeUserSerivice = storeUserSerivice;
         this.jwtService = jwtService;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerUser(@Valid @RequestBody StoreUserRequest registrationInfo) {
+    public ResponseEntity<LoginResponse> registerUser(@Valid @RequestBody StoreUserRequest registrationInfo) {
+        LoginResponse loginResponse = new LoginResponse();
         try {
             storeUserSerivice.registerUser(registrationInfo);
-            return ResponseEntity.ok().build();
+            loginResponse.setSuccess(true);
+            return ResponseEntity.ok().body(loginResponse);
         } catch (StoreUserExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            loginResponse.setSuccess(false);
+            loginResponse.setFailureMessage("USER_EXISTS");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(loginResponse);
         } catch (FailureToSendEmailException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            loginResponse.setSuccess(false);
+            loginResponse.setFailureMessage("EMAIL_FAILURE");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResponse);
         }
     }
 
     @PostMapping("/verify")
-    public ResponseEntity verifyUser(@RequestParam String token) {
-        if (storeUserSerivice.verifyUser(token)) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<LoginResponse> verifyUser(@RequestBody AuthResponse authResponse) {
+        LoginResponse loginResponse = new LoginResponse();
+        if (storeUserSerivice.verifyUser(authResponse.getToken())) {
+            loginResponse.setSuccess(true);
+            return ResponseEntity.ok().body(loginResponse);
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        loginResponse.setSuccess(false);
+        loginResponse.setFailureMessage("USER_NOT_VERIFIED");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(loginResponse);
     }
 
     @PostMapping("/login")
@@ -109,17 +124,25 @@ public class AuthController {
     }
 
     @GetMapping("/isAuthenticated")
-    public ResponseEntity<IsAuthInfo> isAuthenticated(@AuthenticationPrincipal StoreUser user) {
+    public ResponseEntity<IsAuthInfo> isAuthenticated(@AuthenticationPrincipal StoreUser user, @RequestBody String role) {
+        IsAuthInfo isAuthInfo = new IsAuthInfo();
+        isAuthInfo.setAuthenticated(true);
         if (user == null) {
-            IsAuthInfo isAuthInfo = new IsAuthInfo();
             isAuthInfo.setAuthenticated(false);
             isAuthInfo.setErrorMessage("USER_NOT_LOGGED_IN");
             return ResponseEntity.ok(isAuthInfo);
         }
 
-        IsAuthInfo isAuthInfo = new IsAuthInfo();
-        isAuthInfo.setAuthenticated(true);
         isAuthInfo.setUserId(String.valueOf(user.getId()));
+        if (!role.isEmpty()) {
+            Optional<Boolean> hasRole = user.getRoles().stream().map((role1 -> role1.getRoleName().equals(role))).findFirst();
+            if (hasRole.isEmpty()) {
+                isAuthInfo.setAuthenticated(false);
+                isAuthInfo.setErrorMessage("USER_NOT_AUTHORIZED");
+                return ResponseEntity.ok(isAuthInfo);
+            }
+        }
+
         return ResponseEntity.ok(isAuthInfo);
     }
 

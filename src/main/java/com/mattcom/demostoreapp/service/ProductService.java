@@ -1,15 +1,17 @@
 package com.mattcom.demostoreapp.service;
 
+import com.mattcom.demostoreapp.dao.InventoryRepository;
 import com.mattcom.demostoreapp.dao.ProductCategoryRepository;
 import com.mattcom.demostoreapp.dao.ProductRepository;
+import com.mattcom.demostoreapp.entity.Image;
+import com.mattcom.demostoreapp.entity.Inventory;
 import com.mattcom.demostoreapp.entity.Product;
 import com.mattcom.demostoreapp.entity.ProductCategory;
-import com.mattcom.demostoreapp.requestmodels.ProductCategoryRequest;
 import com.mattcom.demostoreapp.requestmodels.ProductRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +22,12 @@ public class ProductService {
     ProductRepository productRepository;
     ProductCategoryRepository productCategoryRepository;
     JdbcTemplate jdbcTemplate;
+    InventoryRepository inventoryRepository;
 
-    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository) {
+    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, InventoryRepository inventoryRepository) {
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     public List<Product> getAllProductsWithCategory(Integer categoryId) {
@@ -32,7 +36,7 @@ public class ProductService {
         }
 
         Optional<ProductCategory> productCategoryOpt = productCategoryRepository.findById(categoryId);
-        if (!productCategoryOpt.isPresent()) {
+        if (productCategoryOpt.isEmpty()) {
             throw new Error("Category not found" + categoryId);
         }
         ProductCategory productCategory = productCategoryOpt.get();
@@ -61,23 +65,28 @@ public class ProductService {
         Product product = new Product();
 
         Optional<ProductCategory> parent = productCategoryRepository.findById(productRequest.getProductCategoryId());
-        if (!parent.isPresent()) {
+        if (parent.isEmpty()) {
             throw new Error("Category not found");
         }
 
-        product.setImages(productRequest.getImages());
+        product.setProductImages(productRequest.getProductImages());
 
         product.setProductCategory(parent.get());
         product.setProductName(productRequest.getProductName());
         product.setProductDescription(productRequest.getProductDescription());
         product.setPrice(productRequest.getPrice());
-        product.setStock(productRequest.getStock());
+        Inventory inventory = productRequest.getInventory();
+        inventory.setProduct(product);
+        product.setInventory(inventory);
+
+
+        //product.setStock(productRequest.getStock());
         productRepository.save(product);
     }
 
     public void deleteProduct(Integer productId) throws Exception {
         Optional<Product> product = productRepository.findById(productId);
-        if (!product.isPresent()) {
+        if (product.isEmpty()) {
             throw new Exception("Product not found");
         }
         productRepository.delete(product.get());
@@ -85,14 +94,14 @@ public class ProductService {
 
     public void updateProduct(ProductRequest productRequest) throws Exception {
         Optional<Product> productOpt = productRepository.findById(productRequest.getId());
-        if (!productOpt.isPresent()) {
+        if (productOpt.isEmpty()) {
             throw new Exception("Product not found");
         }
 
         ProductCategory category = null;
         if (productRequest.getProductCategoryId() != -1) {
             Optional<ProductCategory> categoryOpt = productCategoryRepository.findById(productRequest.getProductCategoryId());
-            if (!categoryOpt.isPresent()) {
+            if (categoryOpt.isEmpty()) {
                 throw new Exception("Parent Category Not Found");
             }
             category = categoryOpt.get();
@@ -102,10 +111,12 @@ public class ProductService {
         product.setProductCategory(category);
         product.setPrice(productRequest.getPrice());
         product.setProductName(productRequest.getProductName());
-        product.setStock(productRequest.getStock());
+        product.updateInventory(productRequest.getInventory());
         product.setProductDescription(productRequest.getProductDescription());
-        product.setImages(productRequest.getImages());
-        productRepository.save(product);
+        product.updateProductImages(productRequest.getProductImages());
+
+        product = productRepository.save(product);
+        System.out.println("e");
     }
 
 

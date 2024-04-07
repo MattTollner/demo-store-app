@@ -9,6 +9,7 @@ import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
 import com.mattcom.demostoreapp.service.StoreUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +53,24 @@ public class StoreUserController {
     @GetMapping("/{id}")
     public ResponseEntity<StoreUser> getUser(@PathVariable Integer id){
         return ResponseEntity.ok(storeUserService.getUser(id));
+    }
+
+    //Todo remove comments
+
+    @GetMapping("/user")
+    public ResponseEntity<StoreUser> getUser(@AuthenticationPrincipal StoreUser user){
+//        if(user == null){
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+        return ResponseEntity.ok(storeUserService.getUser(user.getId()));
+    }
+
+    @GetMapping("/user/address")
+    public ResponseEntity<List<Address>> getAddresses(@AuthenticationPrincipal StoreUser user){
+//        if(user == null){
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+        return ResponseEntity.ok(addressRepository.findByUser_Id(user.getId()));
     }
 
 
