@@ -1,7 +1,7 @@
 package com.mattcom.demostoreapp.api.controller.security;
 
-import com.mattcom.demostoreapp.dao.StoreUserRepository;
-import com.mattcom.demostoreapp.service.JWTService;
+import com.mattcom.demostoreapp.user.StoreUserRepository;
+import com.mattcom.demostoreapp.auth.JWTService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

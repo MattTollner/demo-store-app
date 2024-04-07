@@ -2,7 +2,7 @@ package com.mattcom.demostoreapp.api.controller.order;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mattcom.demostoreapp.entity.StoreOrder;
+import com.mattcom.demostoreapp.order.StoreOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

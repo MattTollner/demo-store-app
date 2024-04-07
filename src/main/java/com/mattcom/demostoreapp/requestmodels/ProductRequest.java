@@ -1,8 +1,8 @@
 package com.mattcom.demostoreapp.requestmodels;
 
-import com.mattcom.demostoreapp.entity.Image;
-import com.mattcom.demostoreapp.entity.Inventory;
-import com.mattcom.demostoreapp.entity.ProductCategory;
+import com.mattcom.demostoreapp.product.image.Image;
+import com.mattcom.demostoreapp.inventory.Inventory;
+import com.mattcom.demostoreapp.product.category.ProductCategory;
 
 import java.util.List;
 

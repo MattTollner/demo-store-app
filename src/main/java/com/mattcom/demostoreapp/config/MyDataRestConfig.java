@@ -1,16 +1,15 @@
 package com.mattcom.demostoreapp.config;
 
 
-import com.mattcom.demostoreapp.entity.*;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
+import com.mattcom.demostoreapp.product.Product;
+import com.mattcom.demostoreapp.product.category.ProductCategory;
+import com.mattcom.demostoreapp.product.image.Image;
+import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.role.Role;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 

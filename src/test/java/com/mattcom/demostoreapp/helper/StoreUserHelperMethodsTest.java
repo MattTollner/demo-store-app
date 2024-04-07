@@ -1,8 +1,6 @@
 package com.mattcom.demostoreapp.helper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mattcom.demostoreapp.api.model.RegistrationInfo;
 import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;

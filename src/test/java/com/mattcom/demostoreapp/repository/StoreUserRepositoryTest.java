@@ -1,8 +1,6 @@
 package com.mattcom.demostoreapp.repository;
 
-import com.mattcom.demostoreapp.dao.StoreUserRepository;
-import com.mattcom.demostoreapp.entity.StoreUser;
-import org.junit.jupiter.api.Test;
+import com.mattcom.demostoreapp.user.StoreUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

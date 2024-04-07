@@ -1,8 +1,8 @@
 package com.mattcom.demostoreapp.requestmodels;
 
 
-import com.mattcom.demostoreapp.entity.Address;
-import com.mattcom.demostoreapp.entity.Role;
+import com.mattcom.demostoreapp.user.address.Address;
+import com.mattcom.demostoreapp.user.role.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

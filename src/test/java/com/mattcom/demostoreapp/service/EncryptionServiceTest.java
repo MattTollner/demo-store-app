@@ -1,6 +1,7 @@
 package com.mattcom.demostoreapp.service;
 
 
+import com.mattcom.demostoreapp.auth.EncryptionService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
