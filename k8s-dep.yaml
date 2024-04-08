@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: demo-store-app-backend
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: demo-store-app-backend
+    template:
+        metadata:
+            labels:
+                app: demo-store-app-backend
+        spec:
+            containers:
+            - name: demo-store-app
+              image: matttollner/demo-store-app-backend
+              imagePullPolicy: IfNotPresent
+              ports:
+                  - containerPort: 8080
