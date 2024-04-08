@@ -5,7 +5,7 @@ metadata:
   labels:
     app: demo-store-app-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: demo-store-app-backend
@@ -19,7 +19,7 @@ spec:
           name: spring-boot-container
           imagePullPolicy: Always
           ports:
-            - containerPort: 9090
+            - containerPort: 8080
           env:
             - name: DB_NAME
               value: demo_store_app
