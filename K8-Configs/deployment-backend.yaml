@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-deployment
+  labels:
+    app: demo-store-app-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-store-app-backend
+  template:
+    metadata:
+      labels:
+        app: demo-store-app-backend
+    spec:
+      containers:
+        - image: crud-application
+          name: spring-boot-container
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+          env:
+            - name: DB_NAME
+              value: demo_store_app
+            - name: DB_USERNAME
+              value: root
+            - name: DB_PASSWORD
+              value: root
