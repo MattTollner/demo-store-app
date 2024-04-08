@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
     name: demo-store-app-backend
 spec:
-    replicas: 2
+    replicas: 1
     selector:
         matchLabels:
             app: demo-store-app-backend
@@ -20,7 +20,7 @@ spec:
                   - containerPort: 8080
               env:
                   - name: MYSQL_HOST
-                    value: mysql
+                    value: mysql-service
                   - name: MYSQL_USER
                     value: root
                   - name: MYSQL_PASSWORD
