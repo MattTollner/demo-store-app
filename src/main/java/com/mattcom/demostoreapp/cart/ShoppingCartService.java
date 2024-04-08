@@ -28,12 +28,9 @@ public class ShoppingCartService {
         this.shoppingCartQuantitiesRepository = shoppingCartQuantitiesRepository;
     }
 
-    public ShoppingCart getCart(StoreUser user) throws UserNotFoundException {
+    public ShoppingCart getCart(StoreUser user) {
         Optional<ShoppingCart> cart = shoppingCartRepository.findByUser_Id(user.getId());
-        if (cart.isEmpty()) {
-            return createCartForUser(user.getId());
-        }
-        return cart.get();
+        return cart.orElseGet(() -> createCartForUser(user.getId()));
     }
 
     public void clearCart(Integer id) {
@@ -49,12 +46,13 @@ public class ShoppingCartService {
     }
 
 
-    //Todo should get the user from the context not the id
-    public void updateProductInCart(ShoppingCartQuantityRequest cartQuantityRequest, StoreUser user) throws ProductNotFoundException, UserNotFoundException {
+
+
+    public void updateProductInCart(ShoppingCartQuantityRequest cartQuantityRequest, StoreUser user) {
         Optional<ShoppingCartQuantities> cartQuantityOpt = getShoppingCartQuantity(cartQuantityRequest, user);
         Optional<Product> product = productRepository.findById(cartQuantityRequest.getProductId());
         if (product.isEmpty()) {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Product with id " + cartQuantityRequest.getProductId() + " not found");
         }
         ShoppingCart cart = getShoppingCart(user);
         shoppingCartRepository.save(updateCartQuantity(cartQuantityOpt, cartQuantityRequest, cart, product.get()));
@@ -83,6 +81,9 @@ public class ShoppingCartService {
         } else {
             cartQuantityOpt.ifPresent(cartQuantities -> shoppingCartQuantity.setQuantity(cartQuantities.getQuantity() + cartQuantityRequest.getQuantity()));
         }
+//        if(cartQuantityOpt.isEmpty() && cartQuantityRequest.getQuantity() > 0) {
+//            cart.addShoppingCartQuantity(shoppingCartQuantity);
+//        }
         return shoppingCartQuantity;
     }
 
@@ -90,13 +91,7 @@ public class ShoppingCartService {
     private ShoppingCart getShoppingCart(StoreUser user) throws UserNotFoundException {
         Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByUser_Id(user.getId());
 
-        ShoppingCart cart;
-        if (cartOpt.isEmpty()) {
-            cart = createCartForUser(user.getId());
-        } else {
-            cart = cartOpt.get();
-        }
-        return cart;
+        return cartOpt.orElseGet(() -> createCartForUser(user.getId()));
     }
 
     private Optional<ShoppingCartQuantities> getShoppingCartQuantity(ShoppingCartQuantityRequest cartQuantityRequest, StoreUser user) {
@@ -112,7 +107,7 @@ public class ShoppingCartService {
     private ShoppingCart createCartForUser(Integer userId) throws UserNotFoundException {
         Optional<StoreUser> user = storeUserRepository.findById(userId);
         if (user.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("User not found");
         }
 
         ShoppingCart cart = new ShoppingCart();

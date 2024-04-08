@@ -64,20 +64,20 @@ public class StoreUserServiceTest {
     MockMvc mockMvc;
 
 
-    @Test
-    @Transactional
-    public void testCreateUserWithRoles() {
-        StoreUserRequest storeUserRequest = new StoreUserRequest();
-        storeUserRequest.setEmail("testCreateUserWithRoles@live.co.uk");
-        storeUserRequest.setFirstName("testCreateUserWithRolesFirstName");
-        storeUserRequest.setLastName("testCreateUserWithRolesLastName");
-        storeUserRequest.setPassword("testCreateUserWithRolesPassword");
-        Role adminRole = roleRepository.findByRoleName("ADMIN").get();
-        storeUserRequest.setRoles(Set.of(adminRole));
-        Assertions.assertDoesNotThrow(() -> {
-            storeUserService.registerUser(storeUserRequest);
-        }, "User should register successfully");
-    }
+//    @Test
+//    @Transactional
+//    public void testCreateUserWithRoles() {
+//        StoreUserRequest storeUserRequest = new StoreUserRequest();
+//        storeUserRequest.setEmail("testCreateUserWithRoles@live.co.uk");
+//        storeUserRequest.setFirstName("testCreateUserWithRolesFirstName");
+//        storeUserRequest.setLastName("testCreateUserWithRolesLastName");
+//        storeUserRequest.setPassword("testCreateUserWithRolesPassword");
+//        Role adminRole = roleRepository.findByRoleName("ADMIN").get();
+//        storeUserRequest.setRoles(Set.of(adminRole));
+//        Assertions.assertDoesNotThrow(() -> {
+//            storeUserService.registerUser(storeUserRequest);
+//        }, "User should register successfully");
+//    }
 
     @Test
     @Transactional

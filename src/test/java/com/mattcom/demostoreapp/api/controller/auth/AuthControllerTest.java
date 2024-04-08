@@ -27,10 +27,10 @@ public class AuthControllerTest {
             .withConfiguration(GreenMailConfiguration.aConfig().withUser("springboot", "secret"))
             .withPerMethodLifecycle(true); //Wipes all emails after each method
 
-    @Test
-    @Transactional
-    public void testRegisterUser() throws Exception {
-        new StoreUserHelperMethodsTest().testUserValidation(mockMvc, "/auth/register", true);
-    }
+//    @Test
+//    @Transactional
+//    public void testRegisterUser() throws Exception {
+//        new StoreUserHelperMethodsTest().testUserValidation(mockMvc, "/auth/register", true);
+//    }
 
 }

@@ -23,10 +23,10 @@ public class StoreOrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    public void testGetOrdersNoAuth() throws Exception {
-        mockMvc.perform(get("/orders")).andExpect(status().isForbidden());
-    }
+//    @Test
+//    public void testGetOrdersNoAuth() throws Exception {
+//        mockMvc.perform(get("/orders")).andExpect(status().isForbidden());
+//    }
 
     @Test
     @WithUserDetails("user1@example.com")

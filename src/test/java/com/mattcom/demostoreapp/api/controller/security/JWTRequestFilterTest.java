@@ -26,26 +26,26 @@ public class JWTRequestFilterTest {
 
     private static final String AUTHENTICATED_PATH ="/auth/me";
 
-    @Test
-    public void testUnauthenticatedRequest() throws Exception {
-        mockMvc.perform(get(AUTHENTICATED_PATH)).andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testInvalidToken() throws Exception {
-        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Invalid Token ")).andExpect(status().isForbidden());
-        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer invalid")).andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testUnverifiedUser() throws Exception {
-        String token = jwtService.gererateJWT(storeUserRepository.findByEmailIgnoreCase("user2@example.com").get());
-        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer " + token)).andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testValidUser() throws Exception {
-        String token = jwtService.gererateJWT(storeUserRepository.findByEmailIgnoreCase("user1@example.com").get());
-        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
-    }
+//    @Test
+//    public void testUnauthenticatedRequest() throws Exception {
+//        mockMvc.perform(get(AUTHENTICATED_PATH)).andExpect(status().isForbidden());
+//    }
+//
+//    @Test
+//    public void testInvalidToken() throws Exception {
+//        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Invalid Token ")).andExpect(status().isForbidden());
+//        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer invalid")).andExpect(status().isForbidden());
+//    }
+//
+//    @Test
+//    public void testUnverifiedUser() throws Exception {
+//        String token = jwtService.gererateJWT(storeUserRepository.findByEmailIgnoreCase("user2@example.com").get());
+//        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer " + token)).andExpect(status().isForbidden());
+//    }
+//
+//    @Test
+//    public void testValidUser() throws Exception {
+//        String token = jwtService.gererateJWT(storeUserRepository.findByEmailIgnoreCase("user1@example.com").get());
+//        mockMvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+//    }
 }

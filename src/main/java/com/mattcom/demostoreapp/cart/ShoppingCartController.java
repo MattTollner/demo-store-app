@@ -24,20 +24,19 @@ public class ShoppingCartController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ShoppingCartQuantities>> getCart(@AuthenticationPrincipal StoreUser user)  {
-        if(user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<List<ShoppingCartQuantities>> getCart(@AuthenticationPrincipal StoreUser user) {
+        if (user == null) {
+            throw new UserNotLoggedInException("User not logged in");
         }
-        try{
-            ShoppingCart cart = cartService.getCart(user);
-            return ResponseEntity.ok(cart.getShoppingCartQuantities());
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        ShoppingCart cart = cartService.getCart(user);
+        return ResponseEntity.ok(cart.getShoppingCartQuantities());
     }
 
     @PutMapping
-    public void updateProductInCart(@AuthenticationPrincipal StoreUser user, @RequestBody ShoppingCartQuantityRequest request) throws Exception {
+    public void updateProductInCart(@AuthenticationPrincipal StoreUser user, @RequestBody ShoppingCartQuantityRequest request) {
+        if (user == null) {
+            throw new UserNotLoggedInException("User not logged in");
+        }
         cartService.updateProductInCart(request, user);
     }
 }
