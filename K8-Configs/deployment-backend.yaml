@@ -15,7 +15,7 @@ spec:
         app: demo-store-app-backend
     spec:
       containers:
-        - image: crud-application
+        - image: matttollner/demo-store-app-backend
           name: spring-boot-container
           imagePullPolicy: Always
           ports:
