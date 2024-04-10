@@ -4,8 +4,8 @@ metadata:
   name: spring-boot-svc
 spec:
   ports:
-    - port: 9090
-      targetPort: 9090
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
       name: http
   selector:
