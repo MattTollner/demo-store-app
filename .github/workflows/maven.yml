@@ -29,10 +29,7 @@ jobs:
     - name: Build and analyze
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -gs sonar-settings.xml verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-        "-Dsonar.host.url=https://sonarcloud.io" \
-        -Dsonar.organization=matttollner \
-        -Dsonar.projectKey=MattTollner_demo-store-app
+      run: mvn -gs sonar-settings.xml verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar "-Dsonar.host.url=https://sonarcloud.io" "-Dsonar.organization=matttollner" "-Dsonar.projectKey=MattTollner_demo-store-app"
       
     - name: Build with Maven
       run: mvn clean install   
