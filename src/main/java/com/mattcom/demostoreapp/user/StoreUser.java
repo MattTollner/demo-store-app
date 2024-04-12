@@ -84,9 +84,7 @@ public class StoreUser extends DefaultEntity implements UserDetails  {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        roles.size();
-        Collection<SimpleGrantedAuthority> result = roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).toList();
-        return result;
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).toList();
     }
 
     @Override

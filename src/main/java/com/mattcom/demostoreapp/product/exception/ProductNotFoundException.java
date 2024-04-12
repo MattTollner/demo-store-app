@@ -1,8 +1,11 @@
 package com.mattcom.demostoreapp.product.exception;
 
+import java.io.Serial;
+
 public class ProductNotFoundException extends RuntimeException{
 
-    public static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public ProductNotFoundException(String message) {
         super(message);

@@ -65,7 +65,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginInfo loginInfo) {
-        String jwt = null;
+        String jwt;
         try {
             jwt = storeUserSerivice.loginUser(loginInfo);
         } catch (FailureToSendEmailException e) {

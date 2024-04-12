@@ -111,8 +111,7 @@ public class ProductService {
         product.setProductDescription(productRequest.getProductDescription());
         product.updateProductImages(productRequest.getProductImages());
 
-        product = productRepository.save(product);
-        System.out.println("e");
+        productRepository.save(product);
     }
 
 

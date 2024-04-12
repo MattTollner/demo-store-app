@@ -62,7 +62,7 @@ public class ShoppingCart extends DefaultEntity {
 
     private ShoppingCartQuantities getProductFromId(Integer id){
         for(ShoppingCartQuantities shoppingCartItem : shoppingCartQuantities){
-            if(shoppingCartItem.getProduct().getId() == id){
+            if(shoppingCartItem.getProduct().getId().equals(id)){
                 return shoppingCartItem;
             }
         }
