@@ -1,9 +1,9 @@
 package com.mattcom.demostoreapp.security;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.mattcom.demostoreapp.user.StoreUserRepository;
-import com.mattcom.demostoreapp.user.StoreUser;
 import com.mattcom.demostoreapp.auth.JWTService;
+import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.StoreUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

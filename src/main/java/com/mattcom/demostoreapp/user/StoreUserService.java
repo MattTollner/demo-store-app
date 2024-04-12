@@ -1,16 +1,16 @@
 package com.mattcom.demostoreapp.user;
 
-import com.mattcom.demostoreapp.auth.reqres.LoginInfo;
-import com.mattcom.demostoreapp.auth.reqres.PasswordResetInfo;
-import com.mattcom.demostoreapp.auth.token.VerificationTokenRepository;
-import com.mattcom.demostoreapp.auth.token.VerificationToken;
-import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
-import com.mattcom.demostoreapp.user.exception.StoreUserExistsException;
-import com.mattcom.demostoreapp.user.exception.UserNotVerifiedException;
-import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
-import com.mattcom.demostoreapp.email.EmailService;
 import com.mattcom.demostoreapp.auth.EncryptionService;
 import com.mattcom.demostoreapp.auth.JWTService;
+import com.mattcom.demostoreapp.auth.reqres.LoginInfo;
+import com.mattcom.demostoreapp.auth.reqres.PasswordResetInfo;
+import com.mattcom.demostoreapp.auth.token.VerificationToken;
+import com.mattcom.demostoreapp.auth.token.VerificationTokenRepository;
+import com.mattcom.demostoreapp.email.EmailService;
+import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
+import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
+import com.mattcom.demostoreapp.user.exception.StoreUserExistsException;
+import com.mattcom.demostoreapp.user.exception.UserNotVerifiedException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

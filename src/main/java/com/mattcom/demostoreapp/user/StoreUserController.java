@@ -1,9 +1,9 @@
 package com.mattcom.demostoreapp.user;
 
 
-import com.mattcom.demostoreapp.user.address.AddressRepository;
-import com.mattcom.demostoreapp.user.address.Address;
 import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
+import com.mattcom.demostoreapp.user.address.Address;
+import com.mattcom.demostoreapp.user.address.AddressRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -1,13 +1,13 @@
 package com.mattcom.demostoreapp.auth;
 
 import com.mattcom.demostoreapp.auth.reqres.*;
-import com.mattcom.demostoreapp.user.role.RoleRepository;
-import com.mattcom.demostoreapp.user.StoreUser;
 import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
+import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
+import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.StoreUserService;
 import com.mattcom.demostoreapp.user.exception.StoreUserExistsException;
 import com.mattcom.demostoreapp.user.exception.UserNotVerifiedException;
-import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
-import com.mattcom.demostoreapp.user.StoreUserService;
+import com.mattcom.demostoreapp.user.role.RoleRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;

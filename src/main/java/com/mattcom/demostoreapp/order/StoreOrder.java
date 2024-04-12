@@ -1,7 +1,7 @@
 package com.mattcom.demostoreapp.order;
 
 import com.mattcom.demostoreapp.cart.ShoppingCartQuantities;
-import com.mattcom.demostoreapp.entity.*;
+import com.mattcom.demostoreapp.entity.DefaultEntity;
 import com.mattcom.demostoreapp.user.StoreUser;
 import com.mattcom.demostoreapp.user.address.Address;
 import jakarta.persistence.*;

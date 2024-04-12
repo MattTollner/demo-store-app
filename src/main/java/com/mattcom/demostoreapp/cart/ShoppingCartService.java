@@ -1,12 +1,12 @@
 package com.mattcom.demostoreapp.cart;
 
 import com.mattcom.demostoreapp.cart.reqres.ShoppingCartQuantityRequest;
-import com.mattcom.demostoreapp.product.ProductRepository;
 import com.mattcom.demostoreapp.product.Product;
-import com.mattcom.demostoreapp.user.StoreUserRepository;
+import com.mattcom.demostoreapp.product.ProductRepository;
 import com.mattcom.demostoreapp.product.exception.ProductNotFoundException;
-import com.mattcom.demostoreapp.user.exception.UserNotFoundException;
 import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.StoreUserRepository;
+import com.mattcom.demostoreapp.user.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

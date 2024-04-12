@@ -1,7 +1,7 @@
 package com.mattcom.demostoreapp.api.controller.security;
 
-import com.mattcom.demostoreapp.user.StoreUserRepository;
 import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.StoreUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

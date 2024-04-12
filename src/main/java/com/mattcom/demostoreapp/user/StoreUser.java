@@ -1,10 +1,10 @@
 package com.mattcom.demostoreapp.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mattcom.demostoreapp.user.address.Address;
-import com.mattcom.demostoreapp.entity.DefaultEntity;
-import com.mattcom.demostoreapp.user.role.Role;
 import com.mattcom.demostoreapp.auth.token.VerificationToken;
+import com.mattcom.demostoreapp.entity.DefaultEntity;
+import com.mattcom.demostoreapp.user.address.Address;
+import com.mattcom.demostoreapp.user.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,7 +2,6 @@ package com.mattcom.demostoreapp.product.category;
 
 
 import com.mattcom.demostoreapp.requestmodels.ProductCategoryRequest;
-import com.mattcom.demostoreapp.product.category.ProductCategoryService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,8 +1,8 @@
 package com.mattcom.demostoreapp.product;
 
 
-import com.mattcom.demostoreapp.requestmodels.ProductRequest;
 import com.mattcom.demostoreapp.product.category.ProductCategoryService;
+import com.mattcom.demostoreapp.requestmodels.ProductRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

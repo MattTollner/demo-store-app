@@ -3,14 +3,11 @@ package com.mattcom.demostoreapp.cart;
 
 import com.mattcom.demostoreapp.cart.reqres.ShoppingCartQuantityRequest;
 import com.mattcom.demostoreapp.user.StoreUser;
-import com.mattcom.demostoreapp.user.exception.UserNotFoundException;
 import com.mattcom.demostoreapp.user.exception.UserNotLoggedInException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

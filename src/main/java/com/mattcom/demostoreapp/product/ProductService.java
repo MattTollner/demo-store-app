@@ -1,9 +1,9 @@
 package com.mattcom.demostoreapp.product;
 
-import com.mattcom.demostoreapp.inventory.InventoryRepository;
-import com.mattcom.demostoreapp.product.category.ProductCategoryRepository;
 import com.mattcom.demostoreapp.inventory.Inventory;
+import com.mattcom.demostoreapp.inventory.InventoryRepository;
 import com.mattcom.demostoreapp.product.category.ProductCategory;
+import com.mattcom.demostoreapp.product.category.ProductCategoryRepository;
 import com.mattcom.demostoreapp.requestmodels.ProductRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;

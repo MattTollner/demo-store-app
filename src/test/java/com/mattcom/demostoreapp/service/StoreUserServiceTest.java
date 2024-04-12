@@ -3,21 +3,20 @@ package com.mattcom.demostoreapp.service;
 import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import com.mattcom.demostoreapp.auth.reqres.LoginInfo;
-import com.mattcom.demostoreapp.auth.reqres.PasswordResetInfo;
 import com.mattcom.demostoreapp.auth.EncryptionService;
 import com.mattcom.demostoreapp.auth.JWTService;
-import com.mattcom.demostoreapp.user.role.RoleRepository;
-import com.mattcom.demostoreapp.user.StoreUserRepository;
-import com.mattcom.demostoreapp.auth.token.VerificationTokenRepository;
-import com.mattcom.demostoreapp.user.role.Role;
-import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.auth.reqres.LoginInfo;
+import com.mattcom.demostoreapp.auth.reqres.PasswordResetInfo;
 import com.mattcom.demostoreapp.auth.token.VerificationToken;
+import com.mattcom.demostoreapp.auth.token.VerificationTokenRepository;
 import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
+import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
+import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.StoreUserRepository;
+import com.mattcom.demostoreapp.user.StoreUserService;
 import com.mattcom.demostoreapp.user.exception.StoreUserExistsException;
 import com.mattcom.demostoreapp.user.exception.UserNotVerifiedException;
-import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
-import com.mattcom.demostoreapp.user.StoreUserService;
+import com.mattcom.demostoreapp.user.role.RoleRepository;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -31,7 +30,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc

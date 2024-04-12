@@ -1,6 +1,5 @@
 package com.mattcom.demostoreapp.user;
 
-import com.mattcom.demostoreapp.user.StoreUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

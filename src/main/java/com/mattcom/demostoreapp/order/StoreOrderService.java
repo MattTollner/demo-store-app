@@ -1,12 +1,12 @@
 package com.mattcom.demostoreapp.order;
 
-import com.mattcom.demostoreapp.order.reqres.PaymentResponse;
-import com.mattcom.demostoreapp.user.address.AddressRepository;
-import com.mattcom.demostoreapp.cart.ShoppingCartQuantitiesRepository;
 import com.mattcom.demostoreapp.cart.ShoppingCartQuantities;
+import com.mattcom.demostoreapp.cart.ShoppingCartQuantitiesRepository;
+import com.mattcom.demostoreapp.order.reqres.PaymentResponse;
+import com.mattcom.demostoreapp.requestmodels.CreateOrderRequest;
 import com.mattcom.demostoreapp.user.StoreUser;
 import com.mattcom.demostoreapp.user.address.Address;
-import com.mattcom.demostoreapp.requestmodels.CreateOrderRequest;
+import com.mattcom.demostoreapp.user.address.AddressRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;

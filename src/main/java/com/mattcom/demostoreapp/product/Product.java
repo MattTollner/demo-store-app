@@ -1,9 +1,9 @@
 package com.mattcom.demostoreapp.product;
 
 import com.mattcom.demostoreapp.entity.DefaultEntity;
-import com.mattcom.demostoreapp.product.image.Image;
 import com.mattcom.demostoreapp.inventory.Inventory;
 import com.mattcom.demostoreapp.product.category.ProductCategory;
+import com.mattcom.demostoreapp.product.image.Image;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

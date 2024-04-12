@@ -1,6 +1,5 @@
 package com.mattcom.demostoreapp.user.address;
 
-import com.mattcom.demostoreapp.user.address.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

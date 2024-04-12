@@ -1,7 +1,6 @@
 package com.mattcom.demostoreapp.user.role;
 
 
-import com.mattcom.demostoreapp.user.role.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

@@ -1,8 +1,8 @@
 package com.mattcom.demostoreapp.email;
 
-import com.mattcom.demostoreapp.user.StoreUser;
 import com.mattcom.demostoreapp.auth.token.VerificationToken;
 import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
+import com.mattcom.demostoreapp.user.StoreUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
