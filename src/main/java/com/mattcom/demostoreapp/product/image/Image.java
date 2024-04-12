@@ -30,12 +30,6 @@ public class Image extends DefaultEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-
-    public Image(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

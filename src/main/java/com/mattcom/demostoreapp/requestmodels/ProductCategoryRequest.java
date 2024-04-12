@@ -1,5 +1,10 @@
 package com.mattcom.demostoreapp.requestmodels;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class ProductCategoryRequest {
 
     private int id;
@@ -16,27 +21,4 @@ public class ProductCategoryRequest {
         this.categoryName = categoryName;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public int getParentCategoryId() {
-        return parentCategoryId;
-    }
-
-    public void setParentCategoryId(int parentCategoryId) {
-        this.parentCategoryId = parentCategoryId;
-    }
 }

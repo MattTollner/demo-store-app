@@ -33,15 +33,6 @@ public class JWTRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String tokenHeader = request.getHeader("Authorization");
         String jwtToken = null;
-//        try {
-//            for (Cookie cookie : request.getCookies()) {
-//                if (cookie.getName().equals("accessToken")) {
-//                    jwtToken = cookie.getValue();
-//                    break;
-//                }
-//            }
-//        } catch (Exception e) {
-//        }
 
         //If it starts with bearer then we know its valid
         if ((tokenHeader != null && tokenHeader.startsWith("Bearer "))) {

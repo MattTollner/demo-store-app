@@ -3,6 +3,7 @@ package com.mattcom.demostoreapp.order;
 import com.mattcom.demostoreapp.order.reqres.PaymentResponse;
 import com.mattcom.demostoreapp.requestmodels.CreateOrderRequest;
 import com.mattcom.demostoreapp.user.StoreUser;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/order")
 public class StoreOrderController {
 
-    private StoreOrderService storeOrderService;
+    private final StoreOrderService storeOrderService;
 
     public StoreOrderController(StoreOrderService storeOrderService) {
         this.storeOrderService = storeOrderService;
@@ -65,13 +66,13 @@ public class StoreOrderController {
     //Todo add user auth
 
     @PostMapping("/{orderId}")
-    public ResponseEntity completeOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
+    public ResponseEntity<HttpStatus> completeOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
         storeOrderService.completeOrder(orderId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity cancelOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
+    public ResponseEntity<HttpStatus> cancelOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
         storeOrderService.cancelOrder(orderId);
         return ResponseEntity.ok().build();
     }

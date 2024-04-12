@@ -1,15 +1,15 @@
 package com.mattcom.demostoreapp.user.exception;
 
+import lombok.Getter;
+
+@Getter
 public class UserNotVerifiedException extends Exception{
 
-    private boolean newEmailSent;
+    private final boolean newEmailSent;
 
     public  UserNotVerifiedException(boolean newEmailSent){
         this.newEmailSent = newEmailSent;
     }
 
 
-    public boolean isNewEmailSent() {
-        return newEmailSent;
-    }
 }

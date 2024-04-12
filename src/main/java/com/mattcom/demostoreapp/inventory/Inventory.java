@@ -29,9 +29,5 @@ public class Inventory extends DefaultEntity {
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
-    public Inventory(int stock) {
-        this.stock = stock;
-    }
-
 
 }

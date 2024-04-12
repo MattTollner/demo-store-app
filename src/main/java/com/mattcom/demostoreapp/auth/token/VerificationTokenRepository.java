@@ -10,11 +10,6 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
     Optional<VerificationToken> findByToken(String token);
 
-
-
-
-
-
     List<VerificationToken> findByStoreUser_IdOrderByIdDesc(Integer id);
 
     long deleteByStoreUser(StoreUser storeUser);

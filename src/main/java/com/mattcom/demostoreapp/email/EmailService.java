@@ -18,7 +18,7 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String appFrontendUrl;
 
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
 
     public EmailService(JavaMailSender javaMailSender) {
@@ -41,7 +41,7 @@ public class EmailService {
         try {
             javaMailSender.send(message);
         } catch (MailException e) {
-            throw new FailureToSendEmailException();
+            throw new FailureToSendEmailException("Verification email failed to send, please check email service");
         }
     }
 
@@ -49,12 +49,12 @@ public class EmailService {
         SimpleMailMessage message = createMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Password reset link");
-        message.setText("Please click on the following linkn to reset password " + appFrontendUrl + "/auth/reset?=" + token);
+        message.setText("Please click on the following link to reset password " + appFrontendUrl + "/auth/reset?=" + token);
 
         try {
             javaMailSender.send(message);
         } catch (MailException e) {
-            throw new FailureToSendEmailException();
+            throw new FailureToSendEmailException("Password reset email failed to send, please check email service");
         }
     }
 

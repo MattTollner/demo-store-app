@@ -1,5 +1,10 @@
 package com.mattcom.demostoreapp.requestmodels;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class RoleRequest {
 
 
@@ -11,19 +16,4 @@ public class RoleRequest {
         this.roleName = roleName;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
 }

@@ -31,7 +31,7 @@ public class StoreOrderQuantities extends DefaultEntity {
 
 
 
-    //Were never going to need the json of the order from the quantity so we can ignore it, this will prevent a cyclical fetch
+    //Were never going to need the json of the order from the quantity; we can ignore it, this will prevent a cyclical fetch
     @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_order_id", nullable = false)
@@ -40,10 +40,6 @@ public class StoreOrderQuantities extends DefaultEntity {
     @Column(name = "price", nullable = false)
     private Double price;
 
-    public StoreOrderQuantities(Product product, Integer quantity) {
-        this.product = product;
-        this.quantity = quantity;
-    }
 
 
 }

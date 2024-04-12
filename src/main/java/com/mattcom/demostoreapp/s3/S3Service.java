@@ -45,7 +45,7 @@ public class S3Service {
             imageName.append(Integer.toHexString(n));
         }
 
-        //Genereate URL
+        //Generate URL
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, imageName.toString())
                         .withMethod(HttpMethod.PUT)

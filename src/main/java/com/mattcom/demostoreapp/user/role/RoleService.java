@@ -1,6 +1,7 @@
 package com.mattcom.demostoreapp.user.role;
 
 import com.mattcom.demostoreapp.requestmodels.RoleRequest;
+import com.mattcom.demostoreapp.user.exception.RoleNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,10 +22,10 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
-    public Role updateRole(RoleRequest roleRequest) throws Exception {
+    public Role updateRole(RoleRequest roleRequest) {
         Optional<Role> roleOpt = roleRepository.findById(roleRequest.getId());
-        if (!roleOpt.isPresent()) {
-            throw new Exception("Role not found");
+        if (roleOpt.isEmpty()) {
+            throw new RoleNotFoundException("Role not found " + roleRequest.getRoleName());
         }
         Role role = roleOpt.get();
         role.setRoleName(roleRequest.getRoleName());
@@ -32,10 +33,10 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
-    public void deleteRole(Integer id) throws Exception {
+    public void deleteRole(Integer id)  {
         Optional<Role> roleOpt = roleRepository.findById(id);
-        if (!roleOpt.isPresent()) {
-            throw new Exception("Role not found");
+        if (roleOpt.isEmpty()) {
+            throw new RoleNotFoundException("Role not found with id " + id);
         }
         roleRepository.delete(roleOpt.get());
     }

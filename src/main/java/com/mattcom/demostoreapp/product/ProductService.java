@@ -4,8 +4,9 @@ import com.mattcom.demostoreapp.inventory.Inventory;
 import com.mattcom.demostoreapp.inventory.InventoryRepository;
 import com.mattcom.demostoreapp.product.category.ProductCategory;
 import com.mattcom.demostoreapp.product.category.ProductCategoryRepository;
+import com.mattcom.demostoreapp.product.exception.CategoryNotFoundException;
+import com.mattcom.demostoreapp.product.exception.ProductNotFoundException;
 import com.mattcom.demostoreapp.requestmodels.ProductRequest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +18,6 @@ public class ProductService {
 
     ProductRepository productRepository;
     ProductCategoryRepository productCategoryRepository;
-    JdbcTemplate jdbcTemplate;
     InventoryRepository inventoryRepository;
 
     public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, InventoryRepository inventoryRepository) {
@@ -44,10 +44,6 @@ public class ProductService {
 
     }
 
-    public List<Product> getProducts() {
-        return productRepository.findAll();
-    }
-
     public Product getProduct(Integer id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isEmpty()) {
@@ -57,12 +53,12 @@ public class ProductService {
     }
 
 
-    public void addProduct(ProductRequest productRequest) {
+    public Product addProduct(ProductRequest productRequest) {
         Product product = new Product();
 
         Optional<ProductCategory> parent = productCategoryRepository.findById(productRequest.getProductCategoryId());
         if (parent.isEmpty()) {
-            throw new Error("Category not found");
+            throw new CategoryNotFoundException("Category Not Found with id " + productRequest.getProductCategoryId());
         }
 
         product.setProductImages(productRequest.getProductImages());
@@ -77,7 +73,7 @@ public class ProductService {
 
 
         //product.setStock(productRequest.getStock());
-        productRepository.save(product);
+        return productRepository.save(product);
     }
 
     public void deleteProduct(Integer productId) throws Exception {
@@ -88,17 +84,17 @@ public class ProductService {
         productRepository.delete(product.get());
     }
 
-    public void updateProduct(ProductRequest productRequest) throws Exception {
+    public Product updateProduct(ProductRequest productRequest) {
         Optional<Product> productOpt = productRepository.findById(productRequest.getId());
         if (productOpt.isEmpty()) {
-            throw new Exception("Product not found");
+            throw new ProductNotFoundException("Product not found with id " + productRequest.getId());
         }
 
         ProductCategory category = null;
         if (productRequest.getProductCategoryId() != -1) {
             Optional<ProductCategory> categoryOpt = productCategoryRepository.findById(productRequest.getProductCategoryId());
             if (categoryOpt.isEmpty()) {
-                throw new Exception("Parent Category Not Found");
+                throw new CategoryNotFoundException("Category Not Found with id " + productRequest.getProductCategoryId());
             }
             category = categoryOpt.get();
         }
@@ -111,7 +107,7 @@ public class ProductService {
         product.setProductDescription(productRequest.getProductDescription());
         product.updateProductImages(productRequest.getProductImages());
 
-        productRepository.save(product);
+        return productRepository.save(product);
     }
 
 

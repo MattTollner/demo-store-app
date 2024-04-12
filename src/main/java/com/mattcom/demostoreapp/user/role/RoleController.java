@@ -2,6 +2,7 @@ package com.mattcom.demostoreapp.user.role;
 
 
 import com.mattcom.demostoreapp.requestmodels.RoleRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,17 +18,17 @@ public class RoleController {
     }
 
     @PostMapping("/create")
-    public void createRole(@RequestBody RoleRequest roleRequest) throws Exception {
-        roleService.createRole(roleRequest);
+    public ResponseEntity<Role> createRole(@RequestBody RoleRequest roleRequest) {
+        return ResponseEntity.ok(roleService.createRole(roleRequest));
     }
 
     @PutMapping("/update")
-    public void updateRole(@RequestBody RoleRequest roleRequest) throws Exception {
-        roleService.updateRole(roleRequest);
+    public ResponseEntity<Role> updateRole(@RequestBody RoleRequest roleRequest)  {
+        return ResponseEntity.ok(roleService.updateRole(roleRequest));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteRole(@PathVariable("id") Integer id) throws Exception {
+    public void deleteRole(@PathVariable("id") Integer id)  {
         roleService.deleteRole(id);
     }
 

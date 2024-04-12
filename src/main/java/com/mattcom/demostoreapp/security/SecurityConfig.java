@@ -20,7 +20,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private JWTRequestFilter jwtRequestFilter;
+    private final JWTRequestFilter jwtRequestFilter;
 
     public SecurityConfig(JWTRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
@@ -31,7 +31,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults()) //By default use the bean named "corsConfigurationSource" Ensures that cors is processed before spring security
+                .cors(Customizer.withDefaults()) //By default, use the bean named "corsConfigurationSource" Ensures that cors is processed before spring security
                 // Runs the request filter before to ensure that the authenticated user is loaded into the security context
                 .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)
                 //Todo remove api/users/update

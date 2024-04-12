@@ -1,10 +1,11 @@
 package com.mattcom.demostoreapp.user;
 
 
+import com.mattcom.demostoreapp.order.exception.AddressNotFoundException;
 import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
 import com.mattcom.demostoreapp.user.address.Address;
 import com.mattcom.demostoreapp.user.address.AddressRepository;
-import org.springframework.http.HttpStatus;
+import com.mattcom.demostoreapp.user.exception.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,8 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class StoreUserController {
 
-     StoreUserService storeUserService;
-     AddressRepository addressRepository;
+    StoreUserService storeUserService;
+    AddressRepository addressRepository;
     private final StoreUserRepository storeUserRepository;
 
     public StoreUserController(StoreUserService storeUserService, AddressRepository addressRepository,
@@ -28,7 +29,7 @@ public class StoreUserController {
     }
 
     @PostMapping("/create")
-    public void addUser(@RequestBody StoreUserRequest userRequest) throws Exception {
+    public void addUser(@RequestBody StoreUserRequest userRequest) {
         storeUserService.createUser(userRequest);
     }
 
@@ -43,46 +44,39 @@ public class StoreUserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<StoreUser>> getUsers(){
+    public ResponseEntity<List<StoreUser>> getUsers() {
         return ResponseEntity.ok(storeUserService.getUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StoreUser> getUser(@PathVariable Integer id){
+    public ResponseEntity<StoreUser> getUser(@PathVariable Integer id) {
         return ResponseEntity.ok(storeUserService.getUser(id));
     }
 
     //Todo remove comments
 
     @GetMapping("/user")
-    public ResponseEntity<StoreUser> getUser(@AuthenticationPrincipal StoreUser user){
-//        if(user == null){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
+    public ResponseEntity<StoreUser> getUser(@AuthenticationPrincipal StoreUser user) {
         return ResponseEntity.ok(storeUserService.getUser(user.getId()));
     }
 
     @GetMapping("/user/address")
-    public ResponseEntity<List<Address>> getAddresses(@AuthenticationPrincipal StoreUser user){
-//        if(user == null){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
+    public ResponseEntity<List<Address>> getAddresses(@AuthenticationPrincipal StoreUser user) {
         return ResponseEntity.ok(addressRepository.findByUser_Id(user.getId()));
     }
 
 
     @GetMapping("/{id}/address")
-    public ResponseEntity<List<Address>> getAddresses(@PathVariable Integer id){
+    public ResponseEntity<List<Address>> getAddresses(@PathVariable Integer id) {
         return ResponseEntity.ok(addressRepository.findByUser_Id(id));
     }
 
     @PostMapping("/{id}/address")
-    public ResponseEntity<Address> getAddresses(@PathVariable Integer id, @RequestBody Address address){
+    public ResponseEntity<Address> getAddresses(@PathVariable Integer id, @RequestBody Address address) {
         Optional<StoreUser> userOpt = storeUserRepository.findById(id);
-        if (!userOpt.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (userOpt.isEmpty()) {
+            throw new UserNotFoundException("User not found with id " + id);
         }
-        StoreUser storeUser = userOpt.get();
         StoreUser refUser = new StoreUser();
         refUser.setId(id);
         address.setUser(refUser);
@@ -90,10 +84,10 @@ public class StoreUserController {
     }
 
     @PutMapping("/{id}/address/{addressId}")
-    public ResponseEntity<Address> updateAddress(@RequestBody Address address, @PathVariable Integer id, @PathVariable Integer addressId){
+    public ResponseEntity<Address> updateAddress(@RequestBody Address address, @PathVariable Integer id, @PathVariable Integer addressId) {
         Optional<Address> addressOpt = addressRepository.findById(addressId);
-        if (!addressOpt.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (addressOpt.isEmpty()) {
+            throw new AddressNotFoundException("Address not found with id " + addressId);
         }
         Address origAddress = addressOpt.get();
         address.setUser(origAddress.getUser());
@@ -102,17 +96,16 @@ public class StoreUserController {
     }
 
     @DeleteMapping("/{id}/address/{addressId}")
-    public ResponseEntity<Address> deleteAddress(@PathVariable Integer id, @PathVariable Integer addressId) throws Exception {
+    public ResponseEntity<Address> deleteAddress(@PathVariable Integer id, @PathVariable Integer addressId) {
         Optional<Address> addressOpt = addressRepository.findById(addressId);
-        if (!addressOpt.isPresent()) {
-            throw new Exception("Could not find address");
+        if (addressOpt.isEmpty()) {
+            throw new AddressNotFoundException("Address not found with id " + addressId);
         }
         Address addressToDel = addressOpt.get();
         addressToDel.setUser(null);
         addressRepository.delete(addressToDel);
         return ResponseEntity.ok(addressToDel);
     }
-
 
 
 }

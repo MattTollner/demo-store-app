@@ -2,6 +2,9 @@ package com.mattcom.demostoreapp.order;
 
 import com.mattcom.demostoreapp.cart.ShoppingCartQuantities;
 import com.mattcom.demostoreapp.cart.ShoppingCartQuantitiesRepository;
+import com.mattcom.demostoreapp.order.exception.AddressNotFoundException;
+import com.mattcom.demostoreapp.order.exception.IncorrectUserToOrderException;
+import com.mattcom.demostoreapp.order.exception.OrderNotFoundException;
 import com.mattcom.demostoreapp.order.reqres.PaymentResponse;
 import com.mattcom.demostoreapp.requestmodels.CreateOrderRequest;
 import com.mattcom.demostoreapp.user.StoreUser;
@@ -21,9 +24,9 @@ import java.util.Optional;
 
 @Service
 public class StoreOrderService {
-    private StoreOrderRepository storeOrderRepository;
-    private ShoppingCartQuantitiesRepository shoppingCartQuantitiesRepository;
-    private AddressRepository addressRepository;
+    private final StoreOrderRepository storeOrderRepository;
+    private final ShoppingCartQuantitiesRepository shoppingCartQuantitiesRepository;
+    private final AddressRepository addressRepository;
 
     @Value("${stripe.api.key.sk}")
     private String stripeKey;
@@ -42,11 +45,11 @@ public class StoreOrderService {
         return storeOrderRepository.findByQuantities_Product_Id(productId);
     }
 
-    public PaymentResponse createOrder(StoreUser user, CreateOrderRequest createOrderRequest) throws StripeException, Exception {
+    public PaymentResponse createOrder(StoreUser user, CreateOrderRequest createOrderRequest) throws StripeException {
         List<ShoppingCartQuantities> shoppingCartQuantities = shoppingCartQuantitiesRepository.findByShoppingCart_User_Id(user.getId());
         Optional<Address> address = addressRepository.findById(createOrderRequest.getAddressId());
         if (address.isEmpty()) {
-            throw new Exception("Address not found");
+            throw new AddressNotFoundException("Could not find address with id of " + createOrderRequest.getAddressId());
         }
         StoreOrder order = new StoreOrder();
         order.setUser(user);
@@ -60,29 +63,27 @@ public class StoreOrderService {
         return createPaymentLink(order);
     }
 
-    public StoreOrder completeOrder(int orderId) {
+    public void completeOrder(int orderId) {
         Optional<StoreOrder> order = storeOrderRepository.findById(orderId);
         if (order.isEmpty()) {
-            //Todo handle exception
-            return null;
+            throw new OrderNotFoundException("Could not find order with id" + orderId);
         }
         if (order.get().getIsPaid()) {
-            return null;
+            return;
         }
         order.get().setIsPaid(true);
-        return storeOrderRepository.save(order.get());
+        storeOrderRepository.save(order.get());
     }
 
     public void cancelOrder(int orderId) {
         Optional<StoreOrder> order = storeOrderRepository.findById(orderId);
         if (order.isEmpty()) {
-            //Todo handle exception
-            return;
+            throw new OrderNotFoundException("Could not find order with id" + orderId);
         }
         storeOrderRepository.delete(order.get());
     }
 
-    private SessionCreateParams.LineItem createLineItem(StoreOrderQuantities shoppingCartQuantities, SessionCreateParams.Builder params) {
+    private SessionCreateParams.LineItem createLineItem(StoreOrderQuantities shoppingCartQuantities) {
         return SessionCreateParams.LineItem.builder()
                 .setQuantity(Long.valueOf(shoppingCartQuantities.getQuantity()))
                 .setPriceData(
@@ -110,8 +111,7 @@ public class StoreOrderService {
 
 
         for (StoreOrderQuantities storeOrderQuantities : order.getQuantities()) {
-            params.addLineItem(createLineItem(storeOrderQuantities, params));
-
+            params.addLineItem(createLineItem(storeOrderQuantities));
         }
 
 
@@ -129,13 +129,11 @@ public class StoreOrderService {
     public StoreOrder getOrder(StoreUser user, int orderId) {
         Optional<StoreOrder> storeOrderOpt = storeOrderRepository.findById(orderId);
         if(storeOrderOpt.isEmpty()){
-            //Todo handle exception
-            return null;
+            throw new OrderNotFoundException("Could not find order with id" + orderId);
         }
         StoreOrder storeOrder = storeOrderOpt.get();
         if(!storeOrder.getUser().getId().equals(user.getId())){
-            //Todo handle exception
-            return null;
+            throw new IncorrectUserToOrderException();
         }
         return storeOrder;
     }

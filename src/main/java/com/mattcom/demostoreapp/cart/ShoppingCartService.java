@@ -16,10 +16,10 @@ import java.util.Optional;
 public class ShoppingCartService {
 
 
-    private ProductRepository productRepository;
-    private ShoppingCartRepository shoppingCartRepository;
-    private StoreUserRepository storeUserRepository;
-    private ShoppingCartQuantitiesRepository shoppingCartQuantitiesRepository;
+    private final ProductRepository productRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final StoreUserRepository storeUserRepository;
+    private final ShoppingCartQuantitiesRepository shoppingCartQuantitiesRepository;
 
     public ShoppingCartService(ProductRepository productRepository, ShoppingCartRepository shoppingCartRepository, StoreUserRepository storeUserRepository, ShoppingCartQuantitiesRepository shoppingCartQuantitiesRepository) {
         this.productRepository = productRepository;
@@ -81,9 +81,6 @@ public class ShoppingCartService {
         } else {
             cartQuantityOpt.ifPresent(cartQuantities -> shoppingCartQuantity.setQuantity(cartQuantities.getQuantity() + cartQuantityRequest.getQuantity()));
         }
-//        if(cartQuantityOpt.isEmpty() && cartQuantityRequest.getQuantity() > 0) {
-//            cart.addShoppingCartQuantity(shoppingCartQuantity);
-//        }
         return shoppingCartQuantity;
     }
 

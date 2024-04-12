@@ -25,13 +25,13 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public void createProduct(@RequestBody ProductRequest productRequest) throws Exception {
-        productService.addProduct(productRequest);
+    public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) {
+        return ResponseEntity.ok(productService.addProduct(productRequest));
     }
 
     @PutMapping("/update")
-    public void updateProduct(@RequestBody ProductRequest productRequest) throws Exception {
-        productService.updateProduct(productRequest);
+    public ResponseEntity<Product> updateProduct(@RequestBody ProductRequest productRequest)  {
+        return ResponseEntity.ok(productService.updateProduct(productRequest));
     }
 
     @GetMapping("/{id}")

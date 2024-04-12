@@ -14,7 +14,7 @@ public class EncryptionService {
 
     private String salt;
 
-    //Spring will first create an instance then does the injection. There for we assign after construct
+    //Spring will first create an instance then does the injection. As a result we assign after construct
     @PostConstruct
     public void postConstruct(){
         salt = BCrypt.gensalt(saltRounds);

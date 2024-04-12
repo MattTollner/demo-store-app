@@ -1,18 +1,13 @@
 package com.mattcom.demostoreapp.requestmodels;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class CreateOrderRequest {
 
     int addressId;
 
 
-
-
-    public int getAddressId() {
-        return addressId;
-    }
-
-
-    public void setAddressId(int addressId) {
-        this.addressId = addressId;
-    }
 }

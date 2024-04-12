@@ -2,6 +2,7 @@ package com.mattcom.demostoreapp.product.category;
 
 
 import com.mattcom.demostoreapp.requestmodels.ProductCategoryRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,17 +20,17 @@ public class ProductCategoryController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void createRole(@RequestBody ProductCategoryRequest productCategoryRequest) throws Exception {
-        productCategoryService.addProductCategory(productCategoryRequest);
+    public ResponseEntity<ProductCategory> createCategory(@RequestBody ProductCategoryRequest productCategoryRequest) {
+        return ResponseEntity.ok(productCategoryService.addProductCategory(productCategoryRequest));
     }
 
     @PutMapping("/update")
-    public void updateRole(@RequestBody ProductCategoryRequest productCategoryRequest) throws Exception {
-        productCategoryService.updateProductCategory(productCategoryRequest);
+    public ResponseEntity<ProductCategory> updateCategory(@RequestBody ProductCategoryRequest productCategoryRequest) {
+        return ResponseEntity.ok(productCategoryService.updateProductCategory(productCategoryRequest));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteRole(@PathVariable("id") Integer id) throws Exception {
+    public void deleteRole(@PathVariable("id") Integer id) {
         productCategoryService.deleteProductCategory(id);
     }
 

@@ -2,7 +2,11 @@ package com.mattcom.demostoreapp.auth.reqres;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class PasswordResetInfo {
 
     @NotNull
@@ -22,19 +26,4 @@ public class PasswordResetInfo {
     public PasswordResetInfo() {
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

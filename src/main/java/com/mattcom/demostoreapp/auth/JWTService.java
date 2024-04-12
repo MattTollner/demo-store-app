@@ -36,7 +36,7 @@ public class JWTService {
     }
 
     //Token used when user logs in
-    public String gererateJWT(StoreUser user) {
+    public String generateJWT(StoreUser user) {
         return JWT.create()
                 .withClaim(EMAIL_KEY, user.getEmail())
                 .withClaim(ID_KEY, String.valueOf(user.getId()))

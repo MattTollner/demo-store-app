@@ -1,5 +1,6 @@
 package com.mattcom.demostoreapp.product.category;
 
+import com.mattcom.demostoreapp.product.exception.CategoryNotFoundException;
 import com.mattcom.demostoreapp.requestmodels.ProductCategoryRequest;
 import org.springframework.stereotype.Service;
 
@@ -19,25 +20,23 @@ public class ProductCategoryService {
         ProductCategory productCategory = new ProductCategory();
 
         Optional<ProductCategory> parent = productCategoryRepository.findById(productCategoryRequest.getParentCategoryId());
-        if (parent.isPresent()) {
-            productCategory.setParentCategory(parent.get());
-        }
+        parent.ifPresent(productCategory::setParentCategory);
 
         productCategory.setCategoryName(productCategoryRequest.getCategoryName());
         return  productCategoryRepository.save(productCategory);
     }
 
-    public ProductCategory updateProductCategory(ProductCategoryRequest productCategoryRequest) throws Exception {
+    public ProductCategory updateProductCategory(ProductCategoryRequest productCategoryRequest) {
         Optional<ProductCategory> categoryOpt = productCategoryRepository.findById(productCategoryRequest.getId());
-        if (!categoryOpt.isPresent()) {
-            throw new Exception("Category not found");
+        if (categoryOpt.isEmpty()) {
+            throw new CategoryNotFoundException("Category not found with id " + productCategoryRequest.getId());
         }
 
         ProductCategory parent = null;
         if (productCategoryRequest.getParentCategoryId() != -1) {
             Optional<ProductCategory> parentOpt = productCategoryRepository.findById(productCategoryRequest.getParentCategoryId());
-            if (!parentOpt.isPresent()) {
-                throw new Exception("Parent Category Not Found");
+            if (parentOpt.isEmpty()) {
+                throw new CategoryNotFoundException("Parent Category Not Found with id " + productCategoryRequest.getId());
             }
             parent = parentOpt.get();
         }
@@ -48,10 +47,10 @@ public class ProductCategoryService {
         return productCategoryRepository.save(category);
     }
 
-    public void deleteProductCategory(Integer categoryId) throws Exception {
+    public void deleteProductCategory(Integer categoryId) {
         Optional<ProductCategory> category = productCategoryRepository.findById(categoryId);
-        if (!category.isPresent()) {
-            throw new Exception("Category not found");
+        if (category.isEmpty()) {
+            throw new CategoryNotFoundException("Category not found with id " + categoryId);
         }
         productCategoryRepository.delete(category.get());
     }

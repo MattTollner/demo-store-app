@@ -29,7 +29,7 @@ public class StripeWebhook {
     // Stripe.apiKey = "sk_test_...";
 
     // This is your Stripe CLI webhook secret for testing your endpoint locally.
-    String endpointSecret = "whsec_013ad49ad23ea1ab027169c044f28d988cad8c2493810bd69fd8a4bc19605dbb";
+    //String endpointSecret = "whsec_013ad49ad23ea1ab027169c044f28d988cad8c2493810bd69fd8a4bc19605dbb";
 
     public StripeWebhook(StoreOrderService storeOrderService, ShoppingCartService shoppingCartService) {
         this.storeOrderService = storeOrderService;
@@ -42,7 +42,7 @@ public class StripeWebhook {
 
         Stripe.apiKey = apiKey;
 
-        Event event = null;
+        Event event;
 
 
         try {
@@ -58,8 +58,6 @@ public class StripeWebhook {
             }
             System.out.println("here");
         } catch (JsonSyntaxException e) {
-            // Invalid payload
-            // response.status(400);
             return ResponseEntity.badRequest().build();
         }
 

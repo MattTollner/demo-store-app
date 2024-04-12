@@ -76,18 +76,4 @@ public class Product extends DefaultEntity {
     }
 
 
-    public int getProductCategoryId() {
-        if (productCategory == null) {
-            return -1;
-        }
-        return productCategory.getId();
-    }
-
-    public void addImage(Image image) {
-        if (this.productImages == null) {
-            this.productImages = new ArrayList<>();
-        }
-        this.productImages.add(image);
-    }
-
 }

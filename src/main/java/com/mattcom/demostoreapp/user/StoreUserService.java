@@ -10,6 +10,7 @@ import com.mattcom.demostoreapp.email.EmailService;
 import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
 import com.mattcom.demostoreapp.requestmodels.StoreUserRequest;
 import com.mattcom.demostoreapp.user.exception.StoreUserExistsException;
+import com.mattcom.demostoreapp.user.exception.UserNotFoundException;
 import com.mattcom.demostoreapp.user.exception.UserNotVerifiedException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -25,11 +26,11 @@ import java.util.Set;
 @Service
 public class StoreUserService {
 
-    private StoreUserRepository storeUserRepository;
-    private EncryptionService encryptionService;
-    private JWTService jwtService;
-    private EmailService emailService;
-    private VerificationTokenRepository verificationTokenRepository;
+    private final StoreUserRepository storeUserRepository;
+    private final EncryptionService encryptionService;
+    private final JWTService jwtService;
+    private final EmailService emailService;
+    private final VerificationTokenRepository verificationTokenRepository;
 
     public StoreUserService(StoreUserRepository storeUserRepository, EncryptionService encryptionService, JWTService jwtService, EmailService emailService, VerificationTokenRepository verificationTokenRepository) {
         this.storeUserRepository = storeUserRepository;
@@ -39,7 +40,7 @@ public class StoreUserService {
         this.verificationTokenRepository = verificationTokenRepository;
     }
 
-    public StoreUser registerUser(StoreUserRequest registrationInfo) throws StoreUserExistsException, FailureToSendEmailException {
+    public void registerUser(StoreUserRequest registrationInfo) throws StoreUserExistsException, FailureToSendEmailException {
         if (storeUserRepository.findByEmailIgnoreCase(registrationInfo.getEmail()).isPresent()) {
             throw new StoreUserExistsException();
         }
@@ -52,7 +53,7 @@ public class StoreUserService {
         VerificationToken token = createConfirmationToken(user);
         emailService.sendVerificationToken(token);
         // verificationTokenRepository.save(token);
-        return storeUserRepository.save(user);
+        storeUserRepository.save(user);
     }
 
     private VerificationToken createConfirmationToken(StoreUser storeUser) {
@@ -73,7 +74,7 @@ public class StoreUserService {
         StoreUser storeUser = userOptional.get();
         if (encryptionService.verifyPassword(loginInfo.getPassword(), storeUser.getPassword())) {
             if (storeUser.isEmailVerified()) {
-                return jwtService.gererateJWT(storeUser);
+                return jwtService.generateJWT(storeUser);
             } else {
                 Set<VerificationToken> tokens = storeUser.getVerificationTokens();
                 boolean resend = tokens.isEmpty() ||
@@ -119,7 +120,7 @@ public class StoreUserService {
         return storeUserRepository.getUsersRolesAndAddressesById(id);
     }
 
-    public StoreUser createUser(StoreUserRequest storeUserRequest) {
+    public void createUser(StoreUserRequest storeUserRequest) {
         StoreUser user = new StoreUser();
         user.setEmail(storeUserRequest.getEmail());
         user.setFirstName(storeUserRequest.getFirstName());
@@ -127,13 +128,13 @@ public class StoreUserService {
         user.setPhoneNumber(storeUserRequest.getPhoneNumber());
         user.setPassword(storeUserRequest.getPassword());
         user.setRoles(storeUserRequest.getRoles());
-        return storeUserRepository.save(user);
+        storeUserRepository.save(user);
     }
 
-    public StoreUser updateUser(@Valid StoreUserRequest userRequest) throws Exception {
+    public StoreUser updateUser(@Valid StoreUserRequest userRequest)  {
         Optional<StoreUser> userOpt = storeUserRepository.findById(userRequest.getId());
-        if (!userOpt.isPresent()) {
-            throw new Exception("User not found");
+        if (userOpt.isEmpty()) {
+            throw new UserNotFoundException("User not found with id " + userRequest.getId());
         }
 
         StoreUser user = userOpt.get();
@@ -148,12 +149,12 @@ public class StoreUserService {
         return storeUserRepository.save(user);
     }
 
-    public void deleteUser(Integer productId) throws Exception {
-        Optional<StoreUser> user = storeUserRepository.findById(productId);
-        if (!user.isPresent()) {
-            throw new Exception("User not found");
+    public void deleteUser(Integer productId) {
+        Optional<StoreUser> userOpt = storeUserRepository.findById(productId);
+        if (userOpt.isEmpty()) {
+            throw new UserNotFoundException("User not found with id " + productId);
         }
-        StoreUser userToDel = user.get();
+        StoreUser userToDel = userOpt.get();
         //userToDel.setRoles(new HashSet<>());
         storeUserRepository.delete(userToDel);
     }
@@ -167,11 +168,11 @@ public class StoreUserService {
         emailService.sendPasswordResetEmail(user.get(),token);
     }
 
-    public void resetPassword(PasswordResetInfo passwordResetInfo) throws Exception {
+    public void resetPassword(PasswordResetInfo passwordResetInfo) {
         String email = jwtService.getEmailResetPassword(passwordResetInfo.getToken());
         Optional<StoreUser> userOpt = storeUserRepository.findByEmailIgnoreCase(email);
         if(userOpt.isEmpty()){
-            throw new Exception("Token user does not exist");
+            throw new UserNotFoundException("User does not exist");
         }
         StoreUser user = userOpt.get();
         user.setPassword(encryptionService.encryptPassword(passwordResetInfo.getPassword()));

@@ -7,30 +7,24 @@ import com.mattcom.demostoreapp.user.StoreUser;
 import com.mattcom.demostoreapp.user.StoreUserService;
 import com.mattcom.demostoreapp.user.exception.StoreUserExistsException;
 import com.mattcom.demostoreapp.user.exception.UserNotVerifiedException;
-import com.mattcom.demostoreapp.user.role.RoleRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private StoreUserService storeUserSerivice;
-    private JWTService jwtService;
-    private RoleRepository roleRepository;
+    private final StoreUserService storeUserSerivice;
+    private final JWTService jwtService;
 
-    public AuthController(StoreUserService storeUserSerivice, JWTService jwtService, RoleRepository roleRepository) {
+
+    public AuthController(StoreUserService storeUserSerivice, JWTService jwtService) {
         this.storeUserSerivice = storeUserSerivice;
         this.jwtService = jwtService;
-        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/register")
@@ -87,30 +81,18 @@ public class AuthController {
             loginResponse.setJwt(jwt);
             loginResponse.setSuccess(true);
             loginResponse.setUserId(jwtService.getUserId(jwt));
-            ResponseCookie cookie = ResponseCookie.from("accessToken", jwt)
-                    .httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(Duration.ofSeconds(60))
-                    .build();
             return ResponseEntity.ok().body(loginResponse);
         }
     }
 
     @PostMapping("/forgot")
-    public ResponseEntity forgotPassword(@RequestParam String email) {
-        try {
-            storeUserSerivice.forgotPassword(email);
-        } catch (FailureToSendEmailException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<HttpStatus> forgotPassword(@RequestParam String email) {
+        storeUserSerivice.forgotPassword(email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/reset")
-    public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetInfo passwordResetInfo) throws Exception {
+    public ResponseEntity<HttpStatus> resetPassword(@Valid @RequestBody PasswordResetInfo passwordResetInfo) {
         storeUserSerivice.resetPassword(passwordResetInfo);
         return ResponseEntity.ok().build();
     }

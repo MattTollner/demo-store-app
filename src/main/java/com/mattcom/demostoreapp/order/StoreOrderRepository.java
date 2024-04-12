@@ -15,9 +15,6 @@ public interface StoreOrderRepository extends JpaRepository<StoreOrder, Integer>
 
     List<StoreOrder> findByQuantities_Product_Id(int id);
 
-
-    List<StoreOrder> findByCreatedAtGreaterThan(LocalDateTime orderDate);
-
     List<StoreOrder> findByCreatedAtBetween(LocalDateTime createdAtStart, LocalDateTime createdAtEnd);
 
 }
