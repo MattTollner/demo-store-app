@@ -1,5 +1,6 @@
 package com.mattcom.demostoreapp.product.category;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mattcom.demostoreapp.entity.DefaultEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class ProductCategory extends DefaultEntity {
     private String categoryName;
 
 
+    @JsonIgnore
     public int getParentCategoryId() {
         if(parentCategory == null){
             return -1;

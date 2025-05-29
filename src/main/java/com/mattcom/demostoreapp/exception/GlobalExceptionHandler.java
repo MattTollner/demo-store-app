@@ -1,10 +1,7 @@
 package com.mattcom.demostoreapp.exception;
 
 import com.mattcom.demostoreapp.email.exception.FailureToSendEmailException;
-import com.mattcom.demostoreapp.order.exception.AddressNotFoundException;
-import com.mattcom.demostoreapp.order.exception.IncorrectUserToOrderException;
-import com.mattcom.demostoreapp.order.exception.OrderNotFoundException;
-import com.mattcom.demostoreapp.product.Product;
+import com.mattcom.demostoreapp.order.exception.*;
 import com.mattcom.demostoreapp.product.exception.CategoryNotFoundException;
 import com.mattcom.demostoreapp.product.exception.ProductNotFoundException;
 import com.mattcom.demostoreapp.user.exception.UserNotFoundException;
@@ -47,7 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IncorrectUserToOrderException.class)
     public ResponseEntity<ErrorResponse> handleIncorrectUserToOrderException(IncorrectUserToOrderException e) {
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.UNAUTHORIZED, new Date());
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN, new Date());
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
     }
 
@@ -63,6 +60,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
     }
 
+    @ExceptionHandler(StripeFailureException.class)
+    public ResponseEntity<ErrorResponse> handleStripeFailureException(StripeFailureException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, new Date());
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+    }
+
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, new Date());
@@ -75,9 +78,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
     }
 
-    @ExceptionHandler(StripeException.class)
-    public ResponseEntity<ErrorResponse> handleStripeException(StripeException e) {
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, new Date());
+    @ExceptionHandler(NoItemsInCartException.class)
+    public ResponseEntity<ErrorResponse> handleNoItemsInCartException(NoItemsInCartException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.NOT_ACCEPTABLE, new Date());
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
     }
+
 }

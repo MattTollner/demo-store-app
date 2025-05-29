@@ -18,12 +18,12 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final StoreUserService storeUserSerivice;
+    private final StoreUserService storeUserService;
     private final JWTService jwtService;
 
 
-    public AuthController(StoreUserService storeUserSerivice, JWTService jwtService) {
-        this.storeUserSerivice = storeUserSerivice;
+    public AuthController(StoreUserService storeUserService, JWTService jwtService) {
+        this.storeUserService = storeUserService;
         this.jwtService = jwtService;
     }
 
@@ -31,7 +31,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> registerUser(@Valid @RequestBody StoreUserRequest registrationInfo) {
         LoginResponse loginResponse = new LoginResponse();
         try {
-            storeUserSerivice.registerUser(registrationInfo);
+            storeUserService.registerUser(registrationInfo);
             loginResponse.setSuccess(true);
             return ResponseEntity.ok().body(loginResponse);
         } catch (StoreUserExistsException e) {
@@ -48,7 +48,7 @@ public class AuthController {
     @PostMapping("/verify")
     public ResponseEntity<LoginResponse> verifyUser(@RequestBody AuthResponse authResponse) {
         LoginResponse loginResponse = new LoginResponse();
-        if (storeUserSerivice.verifyUser(authResponse.getToken())) {
+        if (storeUserService.verifyUser(authResponse.getToken())) {
             loginResponse.setSuccess(true);
             return ResponseEntity.ok().body(loginResponse);
         }
@@ -61,7 +61,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginInfo loginInfo) {
         String jwt;
         try {
-            jwt = storeUserSerivice.loginUser(loginInfo);
+            jwt = storeUserService.loginUser(loginInfo);
         } catch (FailureToSendEmailException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (UserNotVerifiedException e) {
@@ -87,13 +87,13 @@ public class AuthController {
 
     @PostMapping("/forgot")
     public ResponseEntity<HttpStatus> forgotPassword(@RequestParam String email) {
-        storeUserSerivice.forgotPassword(email);
+        storeUserService.forgotPassword(email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/reset")
     public ResponseEntity<HttpStatus> resetPassword(@Valid @RequestBody PasswordResetInfo passwordResetInfo) {
-        storeUserSerivice.resetPassword(passwordResetInfo);
+        storeUserService.resetPassword(passwordResetInfo);
         return ResponseEntity.ok().build();
     }
 

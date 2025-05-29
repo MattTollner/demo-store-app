@@ -41,7 +41,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
             try {
                 //Decode the token and get the email
                 String email = jwtService.getEmail(token);
-                Optional<StoreUser> userOptional = storeUserRepository.getUserAndRolesByEmail(email);
+                Optional<StoreUser> userOptional = storeUserRepository.getUserAndRolesByEmailIgnoreCase(email);
                 if (userOptional.isPresent()) {
                     StoreUser user = userOptional.get();
                     if (user.isEmailVerified()) {

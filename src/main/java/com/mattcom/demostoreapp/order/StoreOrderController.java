@@ -3,10 +3,13 @@ package com.mattcom.demostoreapp.order;
 import com.mattcom.demostoreapp.order.reqres.PaymentResponse;
 import com.mattcom.demostoreapp.requestmodels.CreateOrderRequest;
 import com.mattcom.demostoreapp.user.StoreUser;
+import com.mattcom.demostoreapp.user.exception.UserNotLoggedInException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import spark.Response;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,6 +30,9 @@ public class StoreOrderController {
 
     @GetMapping
     public List<StoreOrder> getOrders(@AuthenticationPrincipal StoreUser user) {
+        if(user == null) {
+            throw new UserNotLoggedInException("User is not logged in");
+        }
         return storeOrderService.getOrders(user);
     }
 
@@ -35,10 +41,13 @@ public class StoreOrderController {
         return ResponseEntity.ok(storeOrderService.getOrder(user, orderId));
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/orders-between")
-    public List<StoreOrder> getOrdersBetween(@RequestParam String orderDateStart, @RequestParam Optional<String> orderDateEnd) {
+    public ResponseEntity<List<StoreOrder>> getOrdersBetween(@RequestParam String orderDateStart, @RequestParam Optional<String> orderDateEnd) {
         if(orderDateStart == null) {
-            return new ArrayList<>();
+            //Todo handle error maybe
+            return ResponseEntity.ok(new ArrayList<StoreOrder>());
         }
 
         LocalDateTime orderDateStartLocal = LocalDateTime.ofInstant(
@@ -48,7 +57,7 @@ public class StoreOrderController {
                 Instant.ofEpochMilli(Long.parseLong(s)), ZoneId.of("UTC"))).orElseGet(LocalDateTime::now);
 
 
-        return storeOrderService.getOrdersBetween(orderDateStartLocal, orderDateEndLocal);
+        return ResponseEntity.ok(storeOrderService.getOrdersBetween(orderDateStartLocal, orderDateEndLocal));
     }
 
     //@PreAuthorize("hasRole('ADMIN')")
@@ -59,22 +68,25 @@ public class StoreOrderController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentResponse> createOrder(@AuthenticationPrincipal StoreUser user, @RequestBody CreateOrderRequest createOrderRequest) throws Exception {
+    public ResponseEntity<PaymentResponse> createOrder(@AuthenticationPrincipal StoreUser user, @RequestBody CreateOrderRequest createOrderRequest) {
+        if(user == null) {
+            throw new UserNotLoggedInException("User is not logged in");
+        }
         return ResponseEntity.ok(storeOrderService.createOrder(user, createOrderRequest));
     }
 
     //Todo add user auth
 
     @PostMapping("/{orderId}")
-    public ResponseEntity<HttpStatus> completeOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void completeOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
         storeOrderService.completeOrder(orderId);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<HttpStatus> cancelOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelOrder(@AuthenticationPrincipal StoreUser user, @PathVariable int orderId) {
         storeOrderService.cancelOrder(orderId);
-        return ResponseEntity.ok().build();
     }
 
 

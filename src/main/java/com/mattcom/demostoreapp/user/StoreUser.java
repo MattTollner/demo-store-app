@@ -26,7 +26,7 @@ import java.util.Set;
 @SuperBuilder
 @Entity
 @Table(name = "store_user")
-public class StoreUser extends DefaultEntity implements UserDetails  {
+public class StoreUser extends DefaultEntity implements UserDetails {
 
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
@@ -40,7 +40,6 @@ public class StoreUser extends DefaultEntity implements UserDetails  {
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
-
 
 
     @JsonIgnore
@@ -57,7 +56,6 @@ public class StoreUser extends DefaultEntity implements UserDetails  {
     private Set<VerificationToken> verificationTokens = new LinkedHashSet<>();
 
 
-
     @Column(name = "email_verified", nullable = false)
     private Boolean emailVerified = false;
 
@@ -68,45 +66,48 @@ public class StoreUser extends DefaultEntity implements UserDetails  {
     private Set<Role> roles = new LinkedHashSet<>();
 
 
-
-
     public Boolean isEmailVerified() {
         return emailVerified;
     }
 
 
-
-    public String[] getRolesAsStringArray(){
+    @JsonIgnore
+    public String[] getRolesAsStringArray() {
         return roles.stream().map(Role::getRoleName).toArray(String[]::new);
     }
 
 
-
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).toList();
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return this.email;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;

@@ -21,7 +21,7 @@ public interface StoreUserRepository extends JpaRepository<StoreUser,Integer> {
      Optional<StoreUser> findByEmailIgnoreCase(String email);
 
      @Query("select a from StoreUser a join fetch a.roles where upper(a.email) =  upper(?1)")
-     Optional<StoreUser> getUserAndRolesByEmail(String email);
+     Optional<StoreUser> getUserAndRolesByEmailIgnoreCase(String email);
 
 
 

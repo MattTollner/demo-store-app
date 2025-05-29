@@ -33,7 +33,7 @@ public class ProductService {
 
         Optional<ProductCategory> productCategoryOpt = productCategoryRepository.findById(categoryId);
         if (productCategoryOpt.isEmpty()) {
-            throw new Error("Category not found" + categoryId);
+            throw new CategoryNotFoundException(categoryId);
         }
         ProductCategory productCategory = productCategoryOpt.get();
         if (productCategory.getParentCategoryId() > 0) {
@@ -58,7 +58,7 @@ public class ProductService {
 
         Optional<ProductCategory> parent = productCategoryRepository.findById(productRequest.getProductCategoryId());
         if (parent.isEmpty()) {
-            throw new CategoryNotFoundException("Category Not Found with id " + productRequest.getProductCategoryId());
+            throw new CategoryNotFoundException(productRequest.getProductCategoryId());
         }
 
         product.setProductImages(productRequest.getProductImages());
@@ -76,10 +76,10 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Integer productId) throws Exception {
+    public void deleteProduct(Integer productId)  {
         Optional<Product> product = productRepository.findById(productId);
         if (product.isEmpty()) {
-            throw new Exception("Product not found");
+            throw new ProductNotFoundException(productId);
         }
         productRepository.delete(product.get());
     }
@@ -87,14 +87,14 @@ public class ProductService {
     public Product updateProduct(ProductRequest productRequest) {
         Optional<Product> productOpt = productRepository.findById(productRequest.getId());
         if (productOpt.isEmpty()) {
-            throw new ProductNotFoundException("Product not found with id " + productRequest.getId());
+            throw new ProductNotFoundException(productRequest.getId());
         }
 
         ProductCategory category = null;
         if (productRequest.getProductCategoryId() != -1) {
             Optional<ProductCategory> categoryOpt = productCategoryRepository.findById(productRequest.getProductCategoryId());
             if (categoryOpt.isEmpty()) {
-                throw new CategoryNotFoundException("Category Not Found with id " + productRequest.getProductCategoryId());
+                throw new CategoryNotFoundException(productRequest.getProductCategoryId());
             }
             category = categoryOpt.get();
         }

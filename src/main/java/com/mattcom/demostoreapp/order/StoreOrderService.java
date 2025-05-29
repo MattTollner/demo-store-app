@@ -2,9 +2,7 @@ package com.mattcom.demostoreapp.order;
 
 import com.mattcom.demostoreapp.cart.ShoppingCartQuantities;
 import com.mattcom.demostoreapp.cart.ShoppingCartQuantitiesRepository;
-import com.mattcom.demostoreapp.order.exception.AddressNotFoundException;
-import com.mattcom.demostoreapp.order.exception.IncorrectUserToOrderException;
-import com.mattcom.demostoreapp.order.exception.OrderNotFoundException;
+import com.mattcom.demostoreapp.order.exception.*;
 import com.mattcom.demostoreapp.order.reqres.PaymentResponse;
 import com.mattcom.demostoreapp.requestmodels.CreateOrderRequest;
 import com.mattcom.demostoreapp.user.StoreUser;
@@ -45,8 +43,11 @@ public class StoreOrderService {
         return storeOrderRepository.findByQuantities_Product_Id(productId);
     }
 
-    public PaymentResponse createOrder(StoreUser user, CreateOrderRequest createOrderRequest) throws StripeException {
+    public PaymentResponse createOrder(StoreUser user, CreateOrderRequest createOrderRequest)  {
         List<ShoppingCartQuantities> shoppingCartQuantities = shoppingCartQuantitiesRepository.findByShoppingCart_User_Id(user.getId());
+        if(shoppingCartQuantities.isEmpty()) {
+            throw new NoItemsInCartException("Cart is empty");
+        }
         Optional<Address> address = addressRepository.findById(createOrderRequest.getAddressId());
         if (address.isEmpty()) {
             throw new AddressNotFoundException("Could not find address with id of " + createOrderRequest.getAddressId());
@@ -66,7 +67,7 @@ public class StoreOrderService {
     public void completeOrder(int orderId) {
         Optional<StoreOrder> order = storeOrderRepository.findById(orderId);
         if (order.isEmpty()) {
-            throw new OrderNotFoundException("Could not find order with id" + orderId);
+            throw new OrderNotFoundException(orderId);
         }
         if (order.get().getIsPaid()) {
             return;
@@ -78,7 +79,7 @@ public class StoreOrderService {
     public void cancelOrder(int orderId) {
         Optional<StoreOrder> order = storeOrderRepository.findById(orderId);
         if (order.isEmpty()) {
-            throw new OrderNotFoundException("Could not find order with id" + orderId);
+            throw new OrderNotFoundException(orderId);
         }
         storeOrderRepository.delete(order.get());
     }
@@ -100,7 +101,7 @@ public class StoreOrderService {
     }
 
 
-    public PaymentResponse createPaymentLink(StoreOrder order) throws StripeException {
+    public PaymentResponse createPaymentLink(StoreOrder order)  {
         Stripe.apiKey = stripeKey;
 
         SessionCreateParams.Builder params = SessionCreateParams.builder()
@@ -120,16 +121,21 @@ public class StoreOrderService {
         SessionCreateParams com = params.build();
 
 
-        Session session = Session.create(com);
-        PaymentResponse paymentResponse = new PaymentResponse();
-        paymentResponse.setPaymentUrl(session.getUrl());
-        return paymentResponse;
+        try{
+            Session session = Session.create(com);
+            PaymentResponse paymentResponse = new PaymentResponse();
+            paymentResponse.setPaymentUrl(session.getUrl());
+            return paymentResponse;
+        } catch (StripeException ex){
+            throw new StripeFailureException(ex.getMessage());
+        }
+
     }
 
     public StoreOrder getOrder(StoreUser user, int orderId) {
         Optional<StoreOrder> storeOrderOpt = storeOrderRepository.findById(orderId);
         if(storeOrderOpt.isEmpty()){
-            throw new OrderNotFoundException("Could not find order with id" + orderId);
+            throw new OrderNotFoundException(orderId);
         }
         StoreOrder storeOrder = storeOrderOpt.get();
         if(!storeOrder.getUser().getId().equals(user.getId())){

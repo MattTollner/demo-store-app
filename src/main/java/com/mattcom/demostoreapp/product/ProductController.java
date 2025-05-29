@@ -26,7 +26,7 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) {
-        return ResponseEntity.ok(productService.addProduct(productRequest));
+        return ResponseEntity.created(productService.addProduct(productRequest)).build();
     }
 
     @PutMapping("/update")
